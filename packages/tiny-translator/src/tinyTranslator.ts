@@ -1,7 +1,7 @@
 import Mustache from 'mustache';
 
-export function tinyTranslator<L extends string>(
-    translations: Record<string, Record<L, string>>
+export function tinyTranslator<L extends string, K extends string>(
+    translations: Record<K, Record<L, string>>
 ) {
     let _locale: L;
 
@@ -15,5 +15,5 @@ export function tinyTranslator<L extends string>(
         return get;
     };
 
-    return { locale, get };
+    return { locale };
 }

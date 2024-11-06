@@ -1,9 +1,8 @@
 import { tinyTranslator } from './tinyTranslator';
-import { describe, it, expect } from '@jest/globals';
 
 describe('tinyTranslator', () => {
     it('should translate text based on locale', () => {
-        const tData = tinyTranslator<'ja' | 'en'>({
+        const tData = tinyTranslator({
             Hello: {
                 en: 'Hello, {{name}}',
                 ja: 'こんにちは, {{name}}',
