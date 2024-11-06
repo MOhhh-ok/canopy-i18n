@@ -17,3 +17,4 @@ function tinyTranslator(translations) {
     };
     return { locale: locale, get: get };
 }
+//# sourceMappingURL=tinyTranslator.js.map

@@ -2,7 +2,10 @@
     "compilerOptions": {
         "esModuleInterop": true,
         "rootDir": "./src",
-        "outDir": "./dist"
+        "outDir": "./dist",
+        "declaration": true,
+        "sourceMap": true,
+        "types": []
     },
     "include": [
         "src/**/*.ts"
