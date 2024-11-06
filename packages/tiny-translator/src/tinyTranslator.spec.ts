@@ -1,4 +1,4 @@
-import tinyTranslator from './tinyTranslator';
+import { tinyTranslator } from './tinyTranslator';
 import { describe, it, expect } from '@jest/globals';
 
 describe('tinyTranslator', () => {
