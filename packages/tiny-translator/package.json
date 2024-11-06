@@ -1,16 +1,25 @@
 {
-    "name": "tiny-translator",
+    "name": "@masa-dev/tiny-translator",
     "version": "0.1.0",
-    "description": "",
-    "main": "index.js",
+    "description": "A tiny i18n translation library",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
+        "build": "tsc",
+        "prepare": "npm run build",
         "test": "jest"
     },
     "keywords": [
         "i18n",
         "tiny-translator"
     ],
-    "author": "",
+    "author": "masa-dev",
     "license": "ISC",
     "devDependencies": {
         "@types/jest": "^29.5.14",

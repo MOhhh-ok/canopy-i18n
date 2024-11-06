@@ -1,4 +1,4 @@
-import { tinyTranslator } from './tinyTranslator';
+import tinyTranslator from './tinyTranslator';
 
 describe('tinyTranslator', () => {
     it('should translate text based on locale', () => {

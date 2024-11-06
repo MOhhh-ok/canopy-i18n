@@ -1,6 +1,6 @@
 import Mustache from 'mustache';
 
-export function tinyTranslator<L extends string>(
+export default function tinyTranslator<L extends string>(
     translations: Record<string, Record<L, string>>
 ) {
     let _locale: L;
