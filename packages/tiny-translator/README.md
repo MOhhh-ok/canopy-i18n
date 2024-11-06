@@ -1,6 +1,6 @@
 # Tiny Translator
 
-This is a simple translator.
+This is a simple translator. Type safe.
 
 ## Install
 
@@ -11,9 +11,7 @@ npm i @masa-dev/tiny-translator
 ## Usage
 
 ```typescript
-type LOCALE = 'ja' | 'en';
-
-const tData = tinyTranslator<LOCALE>({
+const tData = tinyTranslator({
     Hello: {
         en: 'Hello, {{name}}',
         ja: 'こんにちは, {{name}}',
