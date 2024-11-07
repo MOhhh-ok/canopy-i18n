@@ -1,19 +1,24 @@
 import Mustache from 'mustache';
 
-export function tinyTranslator<L extends string, K extends string>(
-    translations: Record<K, Record<L, string>>
-) {
-    let _locale: L;
+export class TinyTranslator<L extends string> {
+    private _locale: L;
+    constructor(private locales: L[], private defaultLocale: L) {}
 
-    const get = (key: keyof typeof translations, data?: any) => {
-        let str = translations[key][_locale];
-        return Mustache.render(str, data);
-    };
+    generate<K extends string>(translations: Record<K, Record<L, string>>) {
+        const get = (key: K, data?: any) => {
+            let str = translations[key][this._locale];
+            return Mustache.render(str, data);
+        };
 
-    const locale = (locale: L) => {
-        _locale = locale;
-        return get;
-    };
+        const locale = (locale: L | null | undefined) => {
+            if (this.locales.includes(locale)) {
+                this._locale = locale;
+            } else {
+                this._locale = this.defaultLocale;
+            }
+            return get;
+        };
 
-    return { locale };
+        return { locale };
+    }
 }

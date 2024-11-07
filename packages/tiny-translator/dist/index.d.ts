@@ -1,1 +1,1 @@
-export * from './tinyTranslator';
+export * from './TinyTranslator';

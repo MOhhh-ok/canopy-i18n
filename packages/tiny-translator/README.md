@@ -10,8 +10,18 @@ npm i @masa-dev/tiny-translator
 
 ## Usage
 
-```typescript
-const tData = tinyTranslator({
+```typescript:tynyTranslator.ts
+import { TinyTranslator } from '@masa-dev/tiny-translator';
+
+// Export instance with locales and defaul locale
+export const translator = new TinyTranslator(['ja', 'en'], 'ja');
+```
+
+```typescript:main.ts
+import { translator } from './tinyTranslator';
+
+// Generate data
+const tData = translator.generate({
     Hello: {
         en: 'Hello, {{name}}',
         ja: 'こんにちは, {{name}}',
@@ -22,15 +32,19 @@ const tData = tinyTranslator({
     },
 });
 
-const tJa = tData.locale('ja');
+function main() {
+    // Set locale
+    const tJa = tData.locale('ja');
 
-// こんにちは、太郎
-tJa('Hello', { name: '太郎' });
+    // Output
+    console.log(tJa('Hello', { name: '太郎' })); // こんにちは、太郎
 
-const tEn = tData.locale('en');
+    // Set locale
+    const tEn = tData.locale('en');
 
-// World
-tEn('World');
+    // Output
+    console.log(tEn('World')); // World
+}
 ```
 
 
