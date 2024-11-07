@@ -10,14 +10,18 @@ npm i @masa-dev/tiny-translator
 
 ## Usage
 
-```typescript:tynyTranslator.ts
+```typescript
+// tynyTranslator.ts
+
 import { TinyTranslator } from '@masa-dev/tiny-translator';
 
 // Export instance with locales and defaul locale
 export const translator = new TinyTranslator(['ja', 'en'], 'ja');
 ```
 
-```typescript:main.ts
+```typescript
+// main.ts
+
 import { translator } from './tinyTranslator';
 
 // Generate data
@@ -46,7 +50,6 @@ function main() {
     console.log(tEn('World')); // World
 }
 ```
-
 
 ## License
 

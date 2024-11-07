@@ -4,14 +4,18 @@ This is a simple translator. Type safe.
 
 ## Core
 
-```typescript:tynyTranslator.ts
+```typescript
+// tynyTranslator.ts
+
 import { TinyTranslator } from '@masa-dev/tiny-translator';
 
 // Export instance with locales and defaul locale
 export const translator = new TinyTranslator(['ja', 'en'], 'ja');
 ```
 
-```typescript:main.ts
+```typescript
+// main.ts
+
 import { translator } from './tinyTranslator';
 
 // Generate data

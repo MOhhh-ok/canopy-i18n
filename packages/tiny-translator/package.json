@@ -1,6 +1,6 @@
 {
     "name": "@masa-dev/tiny-translator",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "description": "A tiny i18n translation library",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
