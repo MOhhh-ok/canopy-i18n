@@ -4,6 +4,14 @@ This is a simple translator. Type safe.
 
 ## Core
 
+### Install
+
+```
+npm i @masa-dev/tiny-translator
+```
+
+### Usage
+
 ```typescript
 // tynyTranslator.ts
 
