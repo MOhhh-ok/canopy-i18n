@@ -1,0 +1,25 @@
+{
+    "$schema": "https://turbo.build/schema.json",
+    "tasks": {
+        "build": {
+            "inputs": [
+                "packages/*"
+            ],
+            "dependsOn": [
+                "^build"
+            ]
+        },
+        "dev": {
+            "inputs": [
+                "packages/*"
+            ],
+            "persistent": true,
+            "cache": false
+        },
+        "test": {
+            "dependsOn": [
+                "^test"
+            ]
+        }
+    }
+}

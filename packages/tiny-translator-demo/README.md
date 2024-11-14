@@ -1,3 +1,30 @@
+# Tiny Translator
+
+This is a simple translator. Type safe.
+
+## Install
+
+```
+npm i @masa-dev/tiny-translator
+```
+
+## Usage
+
+```typescript
+// tynyTranslator.ts
+
+import { TinyTranslator } from '@masa-dev/tiny-translator';
+
+const locales = ['ja', 'en'];
+const defaultLocale = 'ja';
+
+// Export instance with locales and defaul locale
+export const translator = new TinyTranslator(locales, defaultLocale);
+```
+
+```typescript
+// main.ts
+
 import { translator } from './tinyTranslator';
 
 // Generate data
@@ -25,3 +52,8 @@ function main() {
     // Output
     console.log(tEn('World')); // World
 }
+```
+
+## License
+
+ISC

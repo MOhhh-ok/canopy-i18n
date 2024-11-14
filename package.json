@@ -1,0 +1,8 @@
+{
+    "name": "tiny-translator",
+    "private": true,
+    "devDependencies": {
+        "turbo": "^2.2.3"
+    },
+    "packageManager": "pnpm@9.12.3"
+}

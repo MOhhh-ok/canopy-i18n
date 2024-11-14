@@ -1,0 +1,15 @@
+{
+    "extends": "@tsconfig/vite-react/tsconfig.json",
+    "compilerOptions": {
+        "rootDir": "./src", /* Specify the root folder within your source files. */
+        "outDir": "./dist", /* Specify an output folder for all emitted files. */
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.tsx"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}
