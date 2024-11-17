@@ -1,4 +1,4 @@
-import { TinyTranslatorData } from '.';
+import { TinyTranslatorData } from './index';
 export declare class TinyTranslator<L extends string> {
     private locales;
     private defaultLocale;

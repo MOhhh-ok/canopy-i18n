@@ -9,6 +9,7 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@masa-dev/tiny-translator": "workspace:*",
         "@masa-dev/react-tiny-translator": "workspace:*"
     },
     "peerDependencies": {
