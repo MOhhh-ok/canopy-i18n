@@ -9,8 +9,9 @@
         "preview": "vite preview"
     },
     "dependencies": {
+        "@masa-dev/react-tiny-translator": "workspace:*",
         "@masa-dev/tiny-translator": "workspace:*",
-        "@masa-dev/react-tiny-translator": "workspace:*"
+        "react-router-dom": "^6.28.0"
     },
     "peerDependencies": {
         "react": "^18.3.1",

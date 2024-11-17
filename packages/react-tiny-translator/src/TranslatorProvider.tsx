@@ -1,15 +1,16 @@
 import { ReactNode } from 'react';
-import { TranslatorContext } from './utils';
+import { TranslatorContext } from './utils.js';
 
 export type TranslatorProviderProps<L extends string> = {
     locale: L;
+    setLocale: (locale: L) => void;
     children: ReactNode
 }
 
 export function TranslatorProvider<L extends string>(props: TranslatorProviderProps<L>) {
-    const { locale } = props;
+    const { locale, setLocale } = props;
 
-    return <TranslatorContext.Provider value={{ locale }}>
+    return <TranslatorContext.Provider value={{ locale, setLocale }}>
         {props.children}
     </TranslatorContext.Provider>
 }

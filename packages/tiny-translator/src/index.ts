@@ -13,4 +13,4 @@ export type GenerateResult<K extends string, L extends string> = {
     locale: LocaleFunction<K, L>;
 };
 
-export * from './TinyTranslator';
+export * from './TinyTranslator.js';

@@ -1,50 +1,95 @@
-# React + TypeScript + Vite
+# React Tiny Translator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a simple translator for react.
 
-Currently, two official plugins are available:
+## Install
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```
+npm i @masa-dev/react-tiny-translator
+```
 
-## Expanding the ESLint configuration
+## Usage
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Initialize instance.
 
-- Configure the top-level `parserOptions` property like this:
+```typescript
+// translator.ts
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
+import { TinyTranslator } from '@masa-dev/tiny-translator';
+
+const locales = ['en', 'ja'];
+const defaultLocale = 'en';
+
+export const translator = new TinyTranslator(locales, defaultLocale);
+```
+
+Use translator with data.
+
+```typescript
+// Page.tsx
+
+import { useTranslator } from '@masa-dev/react-tiny-translator';
+import { translator } from './translator';
+
+const tData = translator.generate({
+    title: {
+        en: 'My Page',
+        ja: 'マイページ'
     },
-  },
-})
+    description: {
+        en: "This is {{name}}'s page.",
+        ja: 'これは{{name}}のページです。'
+    }
+});
+
+export function Page() {
+    const t = useTranslator(tData);
+    return <div>
+        <h1>{t('title')}</h1>
+        <p>{t('description', { name: 'John' })}</p>
+    </div>
+}
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+Set provider on root.
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+```typescript
+// App.tsx
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+import { TranslatorProvider } from '@masa-dev/react-tiny-translator';
+import { useState } from 'react';
+import { Page } from './Page';
+
+export default function App() {
+    const [locale, setLocale] = useState('en');
+
+    return <TranslatorProvider locale={locale} setLocale={setLocale}>
+        <Page />
+    </TranslatorProvider>
+}
 ```
+
+You can also create locale change component.
+
+```typescript
+// LocaleSelect.tsx
+
+import { useLocale } from '@masa-dev/react-tiny-translator';
+
+export function LocaleSelect() {
+    const { locale, setLocale } = useLocale();
+    
+    return <select value={locale} onChange={e => setLocale(e.target.value)}>
+        <option value='en'>English</option>
+        <option value='ja'>Japanese</option>
+    </select>
+}
+```
+
+## Provider
+
+This library has one provider, and two hooks.
+
+Provider: TranslatorProvider
+
+hooks: useTranslator, useLocale

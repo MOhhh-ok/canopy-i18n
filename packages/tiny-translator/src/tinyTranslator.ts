@@ -1,5 +1,5 @@
-import * as Mustache from 'mustache';
-import { TinyTranslatorData } from './index';
+import Mustache from 'mustache';
+import { TinyTranslatorData } from './index.js';
 
 export class TinyTranslator<L extends string> {
     private _locale: L | null | undefined;

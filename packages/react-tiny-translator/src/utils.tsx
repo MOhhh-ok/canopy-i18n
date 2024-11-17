@@ -5,9 +5,10 @@ import { GenerateResult } from '@masa-dev/tiny-translator';
 
 export type TranslatorContextType<L extends string> = {
     locale: L;
+    setLocale: (locale: L) => void;
 }
 
-export const TranslatorContext = createContext<TranslatorContextType<string>>(null!);
+export const TranslatorContext = createContext<TranslatorContextType<any>>(null!);
 
 export function useTranslator<K extends string, L extends string>(data: GenerateResult<K, L>) {
     const context = useContext(TranslatorContext) as TranslatorContextType<L>;
@@ -15,3 +16,7 @@ export function useTranslator<K extends string, L extends string>(data: Generate
     return data.locale(locale);
 }
 
+export function useLocale<L extends string>() {
+    const { locale, setLocale } = useContext(TranslatorContext) as TranslatorContextType<L>;
+    return { locale, setLocale };
+}
