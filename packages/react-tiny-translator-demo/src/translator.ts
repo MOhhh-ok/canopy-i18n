@@ -1,4 +1,4 @@
-import { TinyTranslator } from '@masa-dev/tiny-translator';
+import { TinyTranslator } from '@masa-dev/react-tiny-translator/utils';
 
 const locales = ['en', 'ja'];
 const defaultLocale = 'en';

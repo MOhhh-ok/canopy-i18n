@@ -12,10 +12,10 @@ npm i @masa-dev/react-tiny-translator
 
 Initialize instance.
 
-```typescript
+```tsx
 // translator.ts
 
-import { TinyTranslator } from '@masa-dev/tiny-translator';
+import { TinyTranslator } from '@masa-dev/react-tiny-translator/utils';
 
 const locales = ['en', 'ja'];
 const defaultLocale = 'en';
@@ -25,7 +25,7 @@ export const translator = new TinyTranslator(locales, defaultLocale);
 
 Use translator with data.
 
-```typescript
+```tsx
 // Page.tsx
 
 import { useTranslator } from '@masa-dev/react-tiny-translator';
@@ -53,7 +53,7 @@ export function Page() {
 
 Set provider on root.
 
-```typescript
+```tsx
 // App.tsx
 
 import { TranslatorProvider } from '@masa-dev/react-tiny-translator';
@@ -71,7 +71,7 @@ export default function App() {
 
 You can also create locale change component.
 
-```typescript
+```tsx
 // LocaleSelect.tsx
 
 import { useLocale } from '@masa-dev/react-tiny-translator';

@@ -10,7 +10,6 @@
     },
     "dependencies": {
         "@masa-dev/react-tiny-translator": "workspace:*",
-        "@masa-dev/tiny-translator": "workspace:*",
         "react-router-dom": "^6.28.0"
     },
     "peerDependencies": {

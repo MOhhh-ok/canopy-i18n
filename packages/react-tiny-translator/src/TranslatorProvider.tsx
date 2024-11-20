@@ -1,5 +1,7 @@
+"use client"
+
 import { ReactNode } from 'react';
-import { TranslatorContext } from './utils.js';
+import { TranslatorContext } from './hooks.js';
 
 export type TranslatorProviderProps<L extends string> = {
     locale: L;

@@ -1,3 +1,3 @@
-export { TinyTranslator } from '@masa-dev/tiny-translator';
+'use client';
 export * from './TranslatorProvider.js';
-export * from './utils.js';
+export * from './hooks.js';

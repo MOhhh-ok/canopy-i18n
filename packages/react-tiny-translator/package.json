@@ -1,11 +1,19 @@
 {
     "name": "@masa-dev/react-tiny-translator",
-    "version": "0.1.3",
+    "version": "1.0.0",
     "description": "A tiny translator for React",
     "license": "MIT",
     "type": "module",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        },
+        "./utils": {
+            "import": "./dist/utils/index.js",
+            "types": "./dist/utils/index.d.ts"
+        }
+    },
     "files": [
         "dist"
     ],
