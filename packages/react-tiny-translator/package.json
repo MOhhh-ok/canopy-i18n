@@ -31,7 +31,8 @@
         "prepublishOnly": "pnpm run build"
     },
     "dependencies": {
-        "@masa-dev/tiny-translator": "workspace:*"
+        "@masa-dev/tiny-translator": "workspace:*",
+        "mustache": "^4.2.0"
     },
     "peerDependencies": {
         "react": "^18.3.1",
@@ -39,6 +40,7 @@
     },
     "devDependencies": {
         "@tsconfig/node20": "^20.1.4",
+        "@types/mustache": "^4.2.5",
         "@types/react": "^18.3.12",
         "typescript": "^5.6.3"
     }

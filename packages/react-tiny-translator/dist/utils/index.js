@@ -1,1 +1,1 @@
-export { TinyTranslator } from '@masa-dev/tiny-translator';
+export * from './TinyTranslator.js';

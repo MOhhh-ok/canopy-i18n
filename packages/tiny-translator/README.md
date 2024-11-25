@@ -56,4 +56,4 @@ function main() {
 
 ## License
 
-ISC
+MIT
