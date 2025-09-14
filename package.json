@@ -1,8 +1,33 @@
 {
-    "name": "tiny-translator",
-    "private": true,
-    "devDependencies": {
-        "turbo": "^2.2.3"
-    },
-    "packageManager": "pnpm@9.12.3"
+  "name": "local-i18n",
+  "version": "0.0.1",
+  "description": "A tiny i18n library",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc",
+    "prepublishOnly": "pnpm run build",
+    "test": "jest"
+  },
+  "dependencies": {
+    "mustache": "^4.2.0"
+  },
+  "devDependencies": {
+    "@tsconfig/node20": "^20.1.6",
+    "@types/mustache": "^4.2.6",
+    "@types/node": "^24.3.3",
+    "typescript": "^5.9.2"
+  },
+  "keywords": [
+    "i18n"
+  ],
+  "license": "MIT"
 }

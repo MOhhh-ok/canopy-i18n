@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "declaration": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "rootDir": "./src",
+    "outDir": "./dist",
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "src/**/*.spec.ts"
+  ]
+}
