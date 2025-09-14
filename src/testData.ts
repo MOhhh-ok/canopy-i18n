@@ -22,3 +22,9 @@ export const nested = {
     en: 'World'
   })
 }
+
+
+export const hasSentMsg = builder<{ email: string }>({
+  ja: o => `${o.email}にメールを送信しました。確認の上、処理を進めて下さい。`,
+  en: o => `Email sent to ${o.email}. Please check and proceed with the process.`
+})

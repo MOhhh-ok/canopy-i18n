@@ -9,4 +9,8 @@ for (const locale of ['ja', 'en']) {
 
   console.log(nested.hello.render());
 
+
+  const hs = applyLocaleDeep(trs.hasSentMsg, locale);
+  console.log(hs.render({ email: 'test@example.com' }));
+
 }

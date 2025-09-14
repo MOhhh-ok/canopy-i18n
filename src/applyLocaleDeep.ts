@@ -1,7 +1,5 @@
 import { isI18nMessage } from "./message";
 
-export function applyLocaleDeep<T extends Record<string, unknown>>(obj: T, locale: string): T;
-export function applyLocaleDeep<T extends unknown[]>(obj: T, locale: string): T;
 export function applyLocaleDeep<T extends object>(obj: T, locale: string): T {
   function visit(v: any): any {
     if (isI18nMessage(v)) {
