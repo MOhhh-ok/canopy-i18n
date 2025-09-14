@@ -6,6 +6,7 @@ A tiny, type-safe i18n helper for building localized messages and applying a loc
 - **Type-safe locales**: Compile-time safety for allowed locale keys.
 - **Per-message fallback**: Each message knows its default and fallback locale.
 - **Template or string**: Use plain strings or `(ctx) => string` templates.
+- **Flexible templating**: Since templates are plain functions, you can freely use JavaScript template literals, conditionals, helpers, or any formatting library. This library does not provide a tagged template literal API.
 - **Deep locale application**: Switch locale across entire object/array trees.
 
 ## Installation
@@ -63,10 +64,10 @@ Returns a `builder` function to create localized messages.
 - **fallbackLocale**: fallback locale when the active locale value is missing.
 
 Overloads:
-- `builder<Record<L[number], string>>() -> Li18nMessage<L, void>`
-- `builder<Record<L[number], Template<C>>>() -> Li18nMessage<L, C>`
+- `builder<Record<L[number], string>>() -> I18nMessage<L, void>`
+- `builder<Record<L[number], Template<C>>>() -> I18nMessage<L, C>`
 
-### Li18nMessage<L, C>
+### I18nMessage<L, C>
 Represents a single localized message.
 
 - **properties**
@@ -80,7 +81,7 @@ Represents a single localized message.
   - `render(ctx?: C): string` — If the value for the active locale is a function, it’s invoked with `ctx`; otherwise the string is returned. Falls back to `fallbackLocale` if needed.
 
 ### applyLocaleDeep(obj, locale)
-Recursively traverses arrays/objects and sets the given `locale` on all `Li18nMessage` instances encountered.
+Recursively traverses arrays/objects and sets the given `locale` on all `I18nMessage` instances encountered.
 
 - Returns a new container (arrays/objects are cloned), but reuses the same message instances after updating their locale.
 
@@ -93,7 +94,7 @@ export type Template<C> = string | ((ctx: C) => string);
 ## Exports
 
 ```ts
-export { Li18nMessage, isLi18nMessage } from 'local-i18n';
+export { I18nMessage, isI18nMessage } from 'local-i18n';
 export { createMessageBuilder } from 'local-i18n';
 export { applyLocaleDeep } from 'local-i18n';
 export type { Template } from 'local-i18n';
@@ -104,6 +105,7 @@ export type { LocalizedMessage } from 'local-i18n';
 - CommonJS build (`main: dist/index.js`) with TypeScript type declarations (`types: dist/index.d.ts`).
 - Works in Node or bundlers; recommended usage is TypeScript/ESM import via your build tool.
 - License: MIT.
+ - Not a tagged template library: you write plain functions (examples use JS template literals inside those functions).
 
 ### Split files example (namespace import)
 
@@ -173,4 +175,4 @@ console.log(m.common.hello.render()); // "Hello"
 console.log(m.home.title.render());   // "Title"
 ```
 
-Note: Module namespace objects are read-only; `applyLocaleDeep` returns a cloned plain object while updating each `Li18nMessage` instance's locale in place.
+Note: Module namespace objects are read-only; `applyLocaleDeep` returns a cloned plain object while updating each `I18nMessage` instance's locale in place.

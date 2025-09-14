@@ -4,7 +4,7 @@ function isTemplateFunction<C>(t: Template<C>): t is (ctx: C) => string {
   return typeof t === 'function';
 }
 
-export class Li18nMessage<Ls extends readonly string[], C> {
+export class I18nMessage<Ls extends readonly string[], C> {
   constructor(
     public readonly locales: Ls,
     private _locale: Ls[number],
@@ -30,7 +30,7 @@ export class Li18nMessage<Ls extends readonly string[], C> {
     return this;
   }
 
-  render(this: Li18nMessage<Ls, void>): string;
+  render(this: I18nMessage<Ls, void>): string;
   render(ctx: C): string;
   render(ctx?: C): string {
     const v = this.data[this._locale] ?? this.data[this._fallbackLocale];
@@ -38,10 +38,10 @@ export class Li18nMessage<Ls extends readonly string[], C> {
   }
 }
 
-export type LocalizedMessage<Ls extends readonly string[], C> = Li18nMessage<Ls, C>;
+export type LocalizedMessage<Ls extends readonly string[], C> = I18nMessage<Ls, C>;
 
-export function isLi18nMessage(x: unknown): x is Li18nMessage<any, any> {
-  return x instanceof Li18nMessage;
+export function isI18nMessage(x: unknown): x is I18nMessage<any, any> {
+  return x instanceof I18nMessage;
 }
 
 
