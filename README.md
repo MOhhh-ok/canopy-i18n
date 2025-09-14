@@ -104,3 +104,73 @@ export type { LocalizedMessage } from 'local-i18n';
 - CommonJS build (`main: dist/index.js`) with TypeScript type declarations (`types: dist/index.d.ts`).
 - Works in Node or bundlers; recommended usage is TypeScript/ESM import via your build tool.
 - License: MIT.
+
+### Split files example (namespace import)
+
+Import all message exports as a namespace and set the locale across the whole tree.
+
+```ts
+// messages.ts
+import { createMessageBuilder } from 'local-i18n';
+const builder = createMessageBuilder(['ja', 'en'] as const, 'ja', 'ja');
+
+export const title = builder({
+  ja: 'タイトルテスト',
+  en: 'Title Test',
+});
+
+export const msg = builder<{ name: string; age: number }>({
+  ja: c => `こんにちは、${c.name}さん。あなたは${c.age}歳です。`,
+  en: c => `Hello, ${c.name}. You are ${c.age} years old.`,
+});
+```
+
+```ts
+// usage.ts
+import * as messages from './messages';
+import { applyLocaleDeep } from 'local-i18n';
+
+const m = applyLocaleDeep(messages, 'en');
+
+console.log(m.title.render());                     // "Title Test"
+console.log(m.msg.render({ name: 'Tanaka', age: 20 }));
+```
+
+#### Multi-file structure
+
+```ts
+// i18n/builder.ts
+import { createMessageBuilder } from 'local-i18n';
+export const builder = createMessageBuilder(['ja', 'en'] as const, 'ja', 'ja');
+```
+
+```ts
+// i18n/messages/common.ts
+import { builder } from '../builder';
+export const hello = builder({ ja: 'こんにちは', en: 'Hello' });
+```
+
+```ts
+// i18n/messages/home.ts
+import { builder } from '../builder';
+export const title = builder({ ja: 'タイトル', en: 'Title' });
+```
+
+```ts
+// i18n/messages/index.ts
+export * as common from './common';
+export * as home from './home';
+```
+
+```ts
+// usage.ts
+import * as msgs from './i18n/messages';
+import { applyLocaleDeep } from 'local-i18n';
+
+const m = applyLocaleDeep(msgs, 'en');
+
+console.log(m.common.hello.render()); // "Hello"
+console.log(m.home.title.render());   // "Title"
+```
+
+Note: Module namespace objects are read-only; `applyLocaleDeep` returns a cloned plain object while updating each `Li18nMessage` instance's locale in place.
