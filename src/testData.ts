@@ -1,6 +1,6 @@
-import { createBuilder } from "./createBuilder";
+import { createMessageBuilder } from "./index";
 
-const builder = createBuilder(['ja', 'en'] as const, 'ja', 'ja');
+const builder = createMessageBuilder(['ja', 'en'] as const, 'ja', 'ja');
 
 export const title = builder({
   ja: 'タイトルテスト',
@@ -8,8 +8,8 @@ export const title = builder({
 });
 
 export const msg = builder<{ name: string, age: number }>({
-  ja: c => `こんにちは、${c.name}さん、${c.age + 10}歳です。`,
-  en: 'Hello'
+  ja: c => `こんにちは、${c.name}さん、あなたは${c.age}歳です。来年は${c.age + 1}歳です。`,
+  en: c => `Hello, ${c.name}. You are ${c.age} years old. Next year you will be ${c.age + 1} years old.`
 });
 
 export const nested = {
