@@ -1,4 +1,4 @@
-## local-i18n
+## canopy-i18n
 
 A tiny, type-safe i18n helper for building localized messages and applying a locale across nested data structures.
 
@@ -12,17 +12,17 @@ A tiny, type-safe i18n helper for building localized messages and applying a loc
 ## Installation
 
 ```bash
-npm install local-i18n
+npm install canopy-i18n
 # or
-pnpm add local-i18n
+pnpm add canopy-i18n
 # or
-yarn add local-i18n
+yarn add canopy-i18n
 ```
 
 ## Quick start
 
 ```ts
-import { createMessageBuilder, applyLocaleDeep } from 'local-i18n';
+import { createMessageBuilder, applyLocaleDeep } from 'canopy-i18n';
 
 // 1) Declare allowed locales and defaults
 const builder = createMessageBuilder(['ja', 'en'] as const, 'ja', 'ja');
@@ -94,11 +94,11 @@ export type Template<C> = string | ((ctx: C) => string);
 ## Exports
 
 ```ts
-export { I18nMessage, isI18nMessage } from 'local-i18n';
-export { createMessageBuilder } from 'local-i18n';
-export { applyLocaleDeep } from 'local-i18n';
-export type { Template } from 'local-i18n';
-export type { LocalizedMessage } from 'local-i18n';
+export { I18nMessage, isI18nMessage } from 'canopy-i18n';
+export { createMessageBuilder } from 'canopy-i18n';
+export { applyLocaleDeep } from 'canopy-i18n';
+export type { Template } from 'canopy-i18n';
+export type { LocalizedMessage } from 'canopy-i18n';
 ```
 
 ## Notes
@@ -113,7 +113,7 @@ Import all message exports as a namespace and set the locale across the whole tr
 
 ```ts
 // messages.ts
-import { createMessageBuilder } from 'local-i18n';
+import { createMessageBuilder } from 'canopy-i18n';
 const builder = createMessageBuilder(['ja', 'en'] as const, 'ja', 'ja');
 
 export const title = builder({
@@ -130,7 +130,7 @@ export const msg = builder<{ name: string; age: number }>({
 ```ts
 // usage.ts
 import * as messages from './messages';
-import { applyLocaleDeep } from 'local-i18n';
+import { applyLocaleDeep } from 'canopy-i18n';
 
 const m = applyLocaleDeep(messages, 'en');
 
@@ -142,7 +142,7 @@ console.log(m.msg.render({ name: 'Tanaka', age: 20 }));
 
 ```ts
 // i18n/builder.ts
-import { createMessageBuilder } from 'local-i18n';
+import { createMessageBuilder } from 'canopy-i18n';
 export const builder = createMessageBuilder(['ja', 'en'] as const, 'ja', 'ja');
 ```
 
@@ -167,7 +167,7 @@ export * as home from './home';
 ```ts
 // usage.ts
 import * as msgs from './i18n/messages';
-import { applyLocaleDeep } from 'local-i18n';
+import { applyLocaleDeep } from 'canopy-i18n';
 
 const m = applyLocaleDeep(msgs, 'en');
 

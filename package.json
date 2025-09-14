@@ -1,5 +1,5 @@
 {
-  "name": "local-i18n",
+  "name": "canopy-i18n",
   "version": "0.0.1",
   "description": "A tiny, type-safe i18n helper",
   "type": "commonjs",
@@ -43,6 +43,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MOhhh-ok/local-i18n"
+    "url": "https://github.com/MOhhh-ok/canopy-i18n"
   }
 }
