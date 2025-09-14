@@ -24,8 +24,8 @@ yarn add canopy-i18n
 ```ts
 import { createMessageBuilder, applyLocaleDeep } from 'canopy-i18n';
 
-// 1) Declare allowed locales and defaults
-const builder = createMessageBuilder(['ja', 'en'] as const, 'ja', 'ja');
+// 1) Declare allowed locales and fallback
+const builder = createMessageBuilder(['ja', 'en'] as const, 'ja');
 
 // 2) Define messages
 const title = builder({
@@ -56,12 +56,11 @@ console.log(msg.setLocale('en').render({ name: 'Tanaka', age: 20 }));
 
 ## API
 
-### createMessageBuilder(locales, locale, fallbackLocale)
+### createMessageBuilder(locales, fallbackLocale)
 Returns a `builder` function to create localized messages.
 
 - **locales**: `readonly string[]` — Allowed locale keys (e.g. `['ja', 'en'] as const`).
-- **locale**: default active locale for new messages.
-- **fallbackLocale**: fallback locale when the active locale value is missing.
+- **fallbackLocale**: fallback locale when the active locale value is missing. New messages start with this locale active.
 
 Overloads:
 - `builder<Record<L[number], string>>() -> I18nMessage<L, void>`
@@ -114,7 +113,7 @@ Import all message exports as a namespace and set the locale across the whole tr
 ```ts
 // messages.ts
 import { createMessageBuilder } from 'canopy-i18n';
-const builder = createMessageBuilder(['ja', 'en'] as const, 'ja', 'ja');
+const builder = createMessageBuilder(['ja', 'en'] as const, 'ja');
 
 export const title = builder({
   ja: 'タイトルテスト',
@@ -143,7 +142,7 @@ console.log(m.msg.render({ name: 'Tanaka', age: 20 }));
 ```ts
 // i18n/builder.ts
 import { createMessageBuilder } from 'canopy-i18n';
-export const builder = createMessageBuilder(['ja', 'en'] as const, 'ja', 'ja');
+export const builder = createMessageBuilder(['ja', 'en'] as const, 'ja');
 ```
 
 ```ts
