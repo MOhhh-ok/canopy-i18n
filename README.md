@@ -175,3 +175,20 @@ console.log(m.home.title.render());   // "Title"
 ```
 
 Note: Module namespace objects are read-only; `applyLocaleDeep` returns a cloned plain object while updating each `I18nMessage` instance's locale in place.
+
+## Example: Next.js App Router
+
+An example Next.js App Router project lives under `examples/next-app`.
+
+- Server-side usage: `/{locale}/server` renders messages using `applyLocaleDeep` in a server component
+- Client-side usage: `/{locale}/client` renders messages using hooks (`useLocale`, `useApplyLocaleDeep`)
+
+How to run:
+
+```bash
+cd examples/next-app
+pnpm install
+pnpm dev
+```
+
+Open `http://localhost:3000` and you will be redirected to `/{locale}` based on `Accept-Language`.
