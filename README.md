@@ -186,7 +186,8 @@ An example Next.js App Router project lives under `examples/next-app`.
 How to run:
 
 ```bash
-cd examples/next-app
+git clone https://github.com/mohhh-ok/canopy-i18n
+cd canopy-i18n/examples/next-app
 pnpm install
 pnpm dev
 ```
