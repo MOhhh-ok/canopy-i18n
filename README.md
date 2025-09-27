@@ -25,15 +25,15 @@ yarn add canopy-i18n
 import { createI18n, applyLocale } from 'canopy-i18n';
 
 // 1) Declare allowed locales and fallback
-const builder = createI18n(['ja', 'en'] as const, 'ja');
+const defineMessage = createI18n(['ja', 'en'] as const, 'ja');
 
 // 2) Define messages
-const title = builder({
+const title = defineMessage({
   ja: 'タイトルテスト',
   en: 'Title Test',
 });
 
-const msg = builder<{ name: string; age: number }>({
+const msg = defineMessage<{ name: string; age: number }>({
   ja: c => `こんにちは、${c.name}さん。あなたは${c.age}歳です。`,
   en: c => `Hello, ${c.name}. You are ${c.age} years old.`,
 });
@@ -42,7 +42,7 @@ const msg = builder<{ name: string; age: number }>({
 const data = {
   title,
   nested: {
-    hello: builder({ ja: 'こんにちは', en: 'Hello' }),
+    hello: defineMessage({ ja: 'こんにちは', en: 'Hello' }),
   },
 };
 
@@ -57,14 +57,14 @@ console.log(msg.setLocale('en').render({ name: 'Tanaka', age: 20 }));
 ## API
 
 ### createI18n(locales, fallbackLocale)
-Returns a `builder` function to create localized messages.
+Returns a `defineMessage` function to create localized messages.
 
 - **locales**: `readonly string[]` — Allowed locale keys (e.g. `['ja', 'en'] as const`).
 - **fallbackLocale**: fallback locale when the active locale value is missing. New messages start with this locale active.
 
 Overloads:
-- `builder<Record<L[number], string>>() -> I18nMessage<L, void>`
-- `builder<Record<L[number], Template<C>>>() -> I18nMessage<L, C>`
+- `defineMessage<Record<L[number], string>>() -> I18nMessage<L, void>`
+- `defineMessage<Record<L[number], Template<C>>>() -> I18nMessage<L, C>`
 
 ### I18nMessage<L, C>
 Represents a single localized message.
@@ -113,14 +113,14 @@ Import all message exports as a namespace and set the locale across the whole tr
 ```ts
 // messages.ts
 import { createI18n } from 'canopy-i18n';
-const builder = createI18n(['ja', 'en'] as const, 'ja');
+const defineMessage = createI18n(['ja', 'en'] as const, 'ja');
 
-export const title = builder({
+export const title = defineMessage({
   ja: 'タイトルテスト',
   en: 'Title Test',
 });
 
-export const msg = builder<{ name: string; age: number }>({
+export const msg = defineMessage<{ name: string; age: number }>({
   ja: c => `こんにちは、${c.name}さん。あなたは${c.age}歳です。`,
   en: c => `Hello, ${c.name}. You are ${c.age} years old.`,
 });
@@ -140,21 +140,21 @@ console.log(m.msg.render({ name: 'Tanaka', age: 20 }));
 #### Multi-file structure
 
 ```ts
-// i18n/builder.ts
+// i18n/defineMessage.ts
 import { createI18n } from 'canopy-i18n';
-export const builder = createI18n(['ja', 'en'] as const, 'ja');
+export const defineMessage = createI18n(['ja', 'en'] as const, 'ja');
 ```
 
 ```ts
 // i18n/messages/common.ts
-import { builder } from '../builder';
-export const hello = builder({ ja: 'こんにちは', en: 'Hello' });
+import { defineMessage } from '../defineMessage';
+export const hello = defineMessage({ ja: 'こんにちは', en: 'Hello' });
 ```
 
 ```ts
 // i18n/messages/home.ts
-import { builder } from '../builder';
-export const title = builder({ ja: 'タイトル', en: 'Title' });
+import { defineMessage } from '../defineMessage';
+export const title = defineMessage({ ja: 'タイトル', en: 'Title' });
 ```
 
 ```ts
