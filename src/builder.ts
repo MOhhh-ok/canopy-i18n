@@ -5,10 +5,10 @@ export function createMessageBuilder<const Ls extends readonly string[]>(
   locales: Ls,
   fallbackLocale: Ls[number]
 ) {
-  function builder<C>(data: Record<Ls[number], Template<C>>): LocalizedMessage<Ls, C>;
-  function builder(data: Record<Ls[number], string>): LocalizedMessage<Ls, void>;
-  function builder(data: Record<Ls[number], any>): LocalizedMessage<Ls, any> {
-    return new I18nMessage<Ls, any>(locales, fallbackLocale).setData(data);
+  function builder<C>(data: Record<Ls[number], Template<C>>, fb?: Ls[number]): LocalizedMessage<Ls, C>;
+  function builder(data: Record<Ls[number], string>, fb?: Ls[number]): LocalizedMessage<Ls, void>;
+  function builder(data: Record<Ls[number], any>, fb?: Ls[number]): LocalizedMessage<Ls, any> {
+    return new I18nMessage<Ls, any>(locales, fb ?? fallbackLocale).setData(data);
   }
   return builder;
 }
