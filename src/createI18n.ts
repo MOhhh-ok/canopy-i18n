@@ -1,7 +1,7 @@
 import { Template } from "./types";
 import { I18nMessage, LocalizedMessage } from "./message";
 
-export function createMessageBuilder<const Ls extends readonly string[]>(
+export function createI18n<const Ls extends readonly string[]>(
   locales: Ls,
   fallbackLocale: Ls[number]
 ) {

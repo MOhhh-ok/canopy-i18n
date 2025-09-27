@@ -24,7 +24,7 @@
     "dev": "tsc --watch",
     "build": "tsc",
     "prepublishOnly": "pnpm run build",
-    "check": "tsc -p . --noEmit",
+    "type-check": "tsc -p . --noEmit",
     "test": "vitest run",
     "test:watch": "vitest"
   },

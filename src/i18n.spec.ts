@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { applyLocaleDeep } from './applyLocaleDeep'
+import { applyLocale } from './applyLocale'
 import * as trs from './testData'
-import { createMessageBuilder } from './index'
+import { createI18n } from './index'
 
 describe('i18n basic rendering', () => {
   it('renders messages in Japanese by default (fallback ja)', () => {
@@ -12,19 +12,19 @@ describe('i18n basic rendering', () => {
   })
 
   it('applyLocaleDeep sets locale to en for all messages', () => {
-    const localized = applyLocaleDeep(trs, 'en')
+    const localized = applyLocale(trs, 'en')
     expect(localized.title.render()).toBe('Title Test')
     expect(localized.msg.render({ name: 'John', age: 30 })).toBe('Hello, John. You are 30 years old. Next year you will be 31 years old.')
     expect(localized.nested.hello.render()).toBe('Hello')
   })
 
   it('applyLocaleDeep works on nested objects and standalone message', () => {
-    const hs = applyLocaleDeep(trs.hasSentMsg, 'ja')
+    const hs = applyLocale(trs.hasSentMsg, 'ja')
     expect(hs.render({ email: 'test@example.com' })).toBe('test@example.comにメールを送信しました。確認の上、処理を進めて下さい。')
   })
 
   it('allows overriding fallbackLocale per message via builder', () => {
-    const builder = createMessageBuilder(['ja', 'en'] as const, 'ja')
+    const builder = createI18n(['ja', 'en'] as const, 'ja')
     const titleJaFallback = builder({ ja: 'タイトル', en: 'Title' })
     const titleEnFallback = builder({ ja: 'タイトル', en: 'Title' }, 'en')
 

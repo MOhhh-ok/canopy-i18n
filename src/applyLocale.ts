@@ -1,6 +1,6 @@
 import { isI18nMessage } from "./message";
 
-export function applyLocaleDeep<T extends object>(obj: T, locale: string): T {
+export function applyLocale<T extends object>(obj: T, locale: string): T {
   function visit(v: any): any {
     if (isI18nMessage(v)) {
       v.setLocale(locale as any);

@@ -1,7 +1,7 @@
-export type { Template } from './types';
+export { applyLocale } from './applyLocale';
+export { createI18n } from './createI18n';
 export { I18nMessage, isI18nMessage } from './message';
 export type { LocalizedMessage } from './message';
-export { createMessageBuilder } from './builder';
-export { applyLocaleDeep } from './applyLocaleDeep';
+export type { Template } from './types';
 
 

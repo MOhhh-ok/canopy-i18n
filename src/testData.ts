@@ -1,6 +1,6 @@
-import { createMessageBuilder } from "./index";
+import { createI18n } from "./index";
 
-const builder = createMessageBuilder(['ja', 'en'] as const, 'ja');
+const builder = createI18n(['ja', 'en'] as const, 'ja');
 
 export const title = builder({
   ja: 'タイトルテスト',
