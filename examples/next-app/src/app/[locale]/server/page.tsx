@@ -1,8 +1,9 @@
 import * as msgs from '@/i18n/messages';
-import { applyLocaleDeep } from 'canopy-i18n';
+import { applyLocale } from 'canopy-i18n';
 
-export default function ServerPage({ params }: { params: { locale: string } }) {
-  const m = applyLocaleDeep(msgs, params.locale);
+export default async function ServerPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const m = applyLocale(msgs, locale);
   return (
     <main style={{ padding: 24 }}>
       <h2>Server Sample</h2>

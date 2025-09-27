@@ -1,6 +1,6 @@
 "use client";
 import { useParams } from 'next/navigation';
-import { applyLocaleDeep } from 'canopy-i18n';
+import { applyLocale } from 'canopy-i18n';
 
 export function useLocale(): string {
   const params = useParams();
@@ -10,7 +10,7 @@ export function useLocale(): string {
 
 export function useApplyLocaleDeep<T extends object>(obj: T): T {
   const locale = useLocale();
-  return applyLocaleDeep(obj, locale);
+  return applyLocale(obj, locale);
 }
 
 

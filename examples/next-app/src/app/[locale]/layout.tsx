@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { applyLocaleDeep } from 'canopy-i18n';
+import { applyLocale } from 'canopy-i18n';
 import '@/app/globals.css';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 import { SampleMenu } from '@/components/SampleMenu';
@@ -13,18 +13,19 @@ export const metadata: Metadata = {
   title: 'canopy-i18n Next.js example',
 };
 
-export default function LocaleLayout({
+export default async function LocaleLayout({
   children,
   params,
-}: Readonly<{ children: React.ReactNode; params: { locale: string } }>) {
-  const m = applyLocaleDeep(msgs, params.locale);
+}: { children: React.ReactNode; params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const m = applyLocale(msgs, locale);
   return (
     <div className={`${geistSans.variable} ${geistMono.variable}`}>
       <header style={{ padding: 16, display: 'flex', gap: 16, alignItems: 'center' }}>
         <h1>{m.home.title.render()}</h1>
         <LocaleSwitcher />
       </header>
-      <SampleMenu locale={params.locale} />
+      <SampleMenu locale={locale} />
       {children}
     </div>
   );

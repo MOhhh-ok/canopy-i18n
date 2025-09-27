@@ -4,13 +4,16 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  canopy-i18n: link:../..
+
 importers:
 
   .:
     dependencies:
       canopy-i18n:
-        specifier: ^0.0.4
-        version: 0.0.4
+        specifier: link:../..
+        version: link:../..
       next:
         specifier: 15.5.3
         version: 15.5.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -228,10 +231,6 @@ packages:
 
   caniuse-lite@1.0.30001741:
     resolution: {integrity: sha512-QGUGitqsc8ARjLdgAfxETDhRbJ0REsP6O3I96TAth/mVjh2cYzN2u+3AzPP3aVSm2FehEItaJw1xd+IGBXWeSw==}
-
-  canopy-i18n@0.0.4:
-    resolution: {integrity: sha512-eKiS62toc3mHurEpFYBrpXDaZpJqYYUbKTkWf4y4NZgpz7aW/8TqJX85VhZtKtgyFS3Vzx7b5/1wqTNbky02PA==}
-    engines: {node: '>=20'}
 
   client-only@0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
@@ -481,8 +480,6 @@ snapshots:
       csstype: 3.1.3
 
   caniuse-lite@1.0.30001741: {}
-
-  canopy-i18n@0.0.4: {}
 
   client-only@0.0.1: {}
 

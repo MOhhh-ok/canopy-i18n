@@ -22,10 +22,10 @@ yarn add canopy-i18n
 ## Quick start
 
 ```ts
-import { createMessageBuilder, applyLocaleDeep } from 'canopy-i18n';
+import { createI18n, applyLocale } from 'canopy-i18n';
 
 // 1) Declare allowed locales and fallback
-const builder = createMessageBuilder(['ja', 'en'] as const, 'ja');
+const builder = createI18n(['ja', 'en'] as const, 'ja');
 
 // 2) Define messages
 const title = builder({
@@ -47,7 +47,7 @@ const data = {
 };
 
 // 4) Apply locale across the tree
-const localized = applyLocaleDeep(data, 'en');
+const localized = applyLocale(data, 'en');
 
 console.log(localized.title.render());       // "Title Test"
 console.log(localized.nested.hello.render()); // "Hello"
@@ -56,7 +56,7 @@ console.log(msg.setLocale('en').render({ name: 'Tanaka', age: 20 }));
 
 ## API
 
-### createMessageBuilder(locales, fallbackLocale)
+### createI18n(locales, fallbackLocale)
 Returns a `builder` function to create localized messages.
 
 - **locales**: `readonly string[]` — Allowed locale keys (e.g. `['ja', 'en'] as const`).
@@ -79,7 +79,7 @@ Represents a single localized message.
   - `setFallbackLocale(locale: L[number]): this`
   - `render(ctx?: C): string` — If the value for the active locale is a function, it’s invoked with `ctx`; otherwise the string is returned. Falls back to `fallbackLocale` if needed.
 
-### applyLocaleDeep(obj, locale)
+### applyLocale(obj, locale)
 Recursively traverses arrays/objects and sets the given `locale` on all `I18nMessage` instances encountered.
 
 - Returns a new container (arrays/objects are cloned), but reuses the same message instances after updating their locale.
@@ -94,8 +94,8 @@ export type Template<C> = string | ((ctx: C) => string);
 
 ```ts
 export { I18nMessage, isI18nMessage } from 'canopy-i18n';
-export { createMessageBuilder } from 'canopy-i18n';
-export { applyLocaleDeep } from 'canopy-i18n';
+export { createI18n } from 'canopy-i18n';
+export { applyLocale } from 'canopy-i18n';
 export type { Template } from 'canopy-i18n';
 export type { LocalizedMessage } from 'canopy-i18n';
 ```
@@ -112,8 +112,8 @@ Import all message exports as a namespace and set the locale across the whole tr
 
 ```ts
 // messages.ts
-import { createMessageBuilder } from 'canopy-i18n';
-const builder = createMessageBuilder(['ja', 'en'] as const, 'ja');
+import { createI18n } from 'canopy-i18n';
+const builder = createI18n(['ja', 'en'] as const, 'ja');
 
 export const title = builder({
   ja: 'タイトルテスト',
@@ -129,9 +129,9 @@ export const msg = builder<{ name: string; age: number }>({
 ```ts
 // usage.ts
 import * as messages from './messages';
-import { applyLocaleDeep } from 'canopy-i18n';
+import { applyLocale } from 'canopy-i18n';
 
-const m = applyLocaleDeep(messages, 'en');
+const m = applyLocale(messages, 'en');
 
 console.log(m.title.render());                     // "Title Test"
 console.log(m.msg.render({ name: 'Tanaka', age: 20 }));
@@ -141,8 +141,8 @@ console.log(m.msg.render({ name: 'Tanaka', age: 20 }));
 
 ```ts
 // i18n/builder.ts
-import { createMessageBuilder } from 'canopy-i18n';
-export const builder = createMessageBuilder(['ja', 'en'] as const, 'ja');
+import { createI18n } from 'canopy-i18n';
+export const builder = createI18n(['ja', 'en'] as const, 'ja');
 ```
 
 ```ts
@@ -166,22 +166,22 @@ export * as home from './home';
 ```ts
 // usage.ts
 import * as msgs from './i18n/messages';
-import { applyLocaleDeep } from 'canopy-i18n';
+import { applyLocale } from 'canopy-i18n';
 
-const m = applyLocaleDeep(msgs, 'en');
+const m = applyLocale(msgs, 'en');
 
 console.log(m.common.hello.render()); // "Hello"
 console.log(m.home.title.render());   // "Title"
 ```
 
-Note: Module namespace objects are read-only; `applyLocaleDeep` returns a cloned plain object while updating each `I18nMessage` instance's locale in place.
+Note: Module namespace objects are read-only; `applyLocale` returns a cloned plain object while updating each `I18nMessage` instance's locale in place.
 
 ## Example: Next.js App Router
 
 An example Next.js App Router project lives under `examples/next-app`.
 
-- Server-side usage: `/{locale}/server` renders messages using `applyLocaleDeep` in a server component
-- Client-side usage: `/{locale}/client` renders messages using hooks (`useLocale`, `useApplyLocaleDeep`)
+- Server-side usage: `/{locale}/server` renders messages using `applyLocale` in a server component
+- Client-side usage: `/{locale}/client` renders messages using hooks (`useLocale`, `useApplyLocale`)
 
 How to run:
 
