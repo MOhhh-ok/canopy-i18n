@@ -1,7 +1,9 @@
-import { Template } from "./types";
+import { isTemplateFunction, Template } from "./types";
 
-function isTemplateFunction<C>(t: Template<C>): t is (ctx: C) => string {
-  return typeof t === "function";
+export type LocalizedMessage<Ls extends readonly string[], C> = I18nMessage<Ls, C>;
+
+export function isI18nMessage(x: unknown): x is I18nMessage<any, any> {
+  return x instanceof I18nMessage;
 }
 
 export class I18nMessage<Ls extends readonly string[], C> {
@@ -39,10 +41,4 @@ export class I18nMessage<Ls extends readonly string[], C> {
     const v = this._data[this._locale];
     return isTemplateFunction(v) ? v(ctx as C) : (v as string);
   }
-}
-
-export type LocalizedMessage<Ls extends readonly string[], C> = I18nMessage<Ls, C>;
-
-export function isI18nMessage(x: unknown): x is I18nMessage<any, any> {
-  return x instanceof I18nMessage;
 }
