@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { applyLocale } from "./applyLocale";
-import { createI18n } from "./index";
+import { createBuilder } from "./index";
 
-const builder = createI18n(["ja", "en"] as const, "ja");
+const builder = createBuilder(["ja", "en"] as const, "ja");
 
 const title = builder({
   ja: "タイトルテスト",
@@ -61,7 +61,7 @@ describe("i18n basic rendering", () => {
   });
 
   it("allows overriding fallbackLocale per message via builder", () => {
-    const builder = createI18n(["ja", "en"] as const, "ja");
+    const builder = createBuilder(["ja", "en"] as const, "ja");
     const titleJaFallback = builder({ ja: "タイトル", en: "Title" });
     const titleEnFallback = builder({ ja: "タイトル", en: "Title" }, "en");
 
