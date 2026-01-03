@@ -1,4 +1,4 @@
-import { I18nMessage, LocalizedMessage } from "./message";
+import { I18nMessage, isI18nMessage, LocalizedMessage } from "./message";
 
 export class ChainBuilder<
   const Ls extends readonly string[],
@@ -8,7 +8,7 @@ export class ChainBuilder<
 
   constructor(
     private readonly locales: Ls,
-    private readonly fallbackLocale: Ls[number],
+    private readonly locale: Ls[number],
     messages?: Messages,
   ) {
     this.messages = (messages ?? {}) as Messages;
@@ -19,7 +19,6 @@ export class ChainBuilder<
    */
   add<Entries extends Record<string, Record<Ls[number], string>>>(
     entries: { [K in keyof Entries]: K extends keyof Messages ? never : Entries[K] },
-    fallback?: Ls[number],
   ): ChainBuilder<
     Ls,
     Messages & { [K in keyof Entries]: LocalizedMessage<Ls, void> }
@@ -27,11 +26,12 @@ export class ChainBuilder<
     const newMessages = { ...this.messages };
 
     for (const [key, data] of Object.entries(entries)) {
-      const msg = new I18nMessage<Ls, void>(this.locales, fallback ?? this.fallbackLocale).setData(data);
+      const msg = new I18nMessage<Ls, void>(this.locales, this.locale).setData(data);
+      msg.setLocale(this.locale);
       (newMessages as any)[key] = msg;
     }
 
-    return new ChainBuilder(this.locales, this.fallbackLocale, newMessages as any);
+    return new ChainBuilder(this.locales, this.locale, newMessages as any);
   }
 
   /**
@@ -39,14 +39,12 @@ export class ChainBuilder<
    */
   addTemplates<C>(): <Entries extends Record<string, Record<Ls[number], (ctx: C) => string>>>(
     entries: { [K in keyof Entries]: K extends keyof Messages ? never : Entries[K] },
-    fallback?: Ls[number],
   ) => ChainBuilder<
     Ls,
     Messages & { [K in keyof Entries]: LocalizedMessage<Ls, C> }
   > {
     return <Entries extends Record<string, Record<Ls[number], (ctx: C) => string>>>(
       entries: { [K in keyof Entries]: K extends keyof Messages ? never : Entries[K] },
-      fallback?: Ls[number],
     ): ChainBuilder<
       Ls,
       Messages & { [K in keyof Entries]: LocalizedMessage<Ls, C> }
@@ -54,12 +52,41 @@ export class ChainBuilder<
       const newMessages = { ...this.messages };
 
       for (const [key, data] of Object.entries(entries)) {
-        const msg = new I18nMessage<Ls, C>(this.locales, fallback ?? this.fallbackLocale).setData(data);
+        const msg = new I18nMessage<Ls, C>(this.locales, this.locale).setData(data);
+        msg.setLocale(this.locale);
         (newMessages as any)[key] = msg;
       }
 
-      return new ChainBuilder(this.locales, this.fallbackLocale, newMessages as any);
+      return new ChainBuilder(this.locales, this.locale, newMessages as any);
     };
+  }
+
+  /**
+   * すべてのメッセージにロケールを適用した新しいChainBuilderインスタンスを返す
+   */
+  applyLocale(locale: Ls[number]): ChainBuilder<Ls, Messages> {
+    const clonedMessages = this.deepCloneWithLocale(this.messages, locale);
+    return new ChainBuilder(this.locales, locale, clonedMessages);
+  }
+
+  private deepCloneWithLocale<T>(obj: T, locale: Ls[number]): T {
+    if (isI18nMessage(obj)) {
+      const cloned = Object.create(Object.getPrototypeOf(obj));
+      Object.assign(cloned, obj);
+      cloned.setLocale(locale);
+      return cloned;
+    }
+    if (Array.isArray(obj)) {
+      return (obj as any[]).map(v => this.deepCloneWithLocale(v, locale)) as T;
+    }
+    if (obj && typeof obj === "object") {
+      const out: Record<string, any> = {};
+      for (const k of Object.keys(obj)) {
+        out[k] = this.deepCloneWithLocale((obj as any)[k], locale);
+      }
+      return out as T;
+    }
+    return obj;
   }
 
   build(): Messages {
@@ -69,7 +96,7 @@ export class ChainBuilder<
 
 export function createChainBuilder<const Ls extends readonly string[]>(
   locales: Ls,
-  fallbackLocale: Ls[number],
+  locale: Ls[number],
 ): ChainBuilder<Ls, {}> {
-  return new ChainBuilder(locales, fallbackLocale);
+  return new ChainBuilder(locales, locale);
 }

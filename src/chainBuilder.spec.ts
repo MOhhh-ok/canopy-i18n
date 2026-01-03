@@ -59,7 +59,7 @@ describe("ChainBuilder", () => {
     expect(messages.farewell.render({ name: "花子" })).toBe("さようなら、花子さん");
   });
 
-  it("works with applyLocale", () => {
+  it("works with applyLocale function", () => {
     const messages = createChainBuilder(["ja", "en"] as const, "ja")
       .add({
         title: { ja: "タイトル", en: "Title" },
@@ -75,5 +75,55 @@ describe("ChainBuilder", () => {
     const localized = applyLocale(messages, "en");
     expect(localized.title.render()).toBe("Title");
     expect(localized.msg.render({ name: "John" })).toBe("Hello, John");
+  });
+
+  it("supports applyLocale method in chain", () => {
+    const builder = createChainBuilder(["ja", "en"] as const, "ja")
+      .add({
+        title: { ja: "タイトル", en: "Title" },
+      })
+      .addTemplates<{ name: string }>()({
+        msg: {
+          ja: (c) => `こんにちは、${c.name}さん`,
+          en: (c) => `Hello, ${c.name}`,
+        },
+      });
+
+    const englishBuilder = builder.applyLocale("en");
+    const messages = englishBuilder.build();
+
+    expect(messages.title.render()).toBe("Title");
+    expect(messages.msg.render({ name: "John" })).toBe("Hello, John");
+  });
+
+  it("applyLocale returns new instance without mutating original", () => {
+    const builder = createChainBuilder(["ja", "en"] as const, "ja")
+      .add({
+        title: { ja: "タイトル", en: "Title" },
+      });
+
+    const japaneseMessages = builder.build();
+    const englishBuilder = builder.applyLocale("en");
+    const englishMessages = englishBuilder.build();
+
+    // 元のインスタンスは変更されない
+    expect(japaneseMessages.title.render()).toBe("タイトル");
+    // 新しいインスタンスは英語
+    expect(englishMessages.title.render()).toBe("Title");
+  });
+
+  it("applyLocale can be chained with add methods", () => {
+    const messages = createChainBuilder(["ja", "en"] as const, "ja")
+      .add({
+        title: { ja: "タイトル", en: "Title" },
+      })
+      .applyLocale("en")
+      .add({
+        subtitle: { ja: "サブタイトル", en: "Subtitle" },
+      })
+      .build();
+
+    expect(messages.title.render()).toBe("Title");
+    expect(messages.subtitle.render()).toBe("Subtitle");
   });
 });
