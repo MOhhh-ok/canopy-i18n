@@ -8,7 +8,6 @@ export class ChainBuilder<
 
   constructor(
     private readonly locales: Ls,
-    private readonly locale: Ls[number],
     messages?: Messages,
   ) {
     this.messages = (messages ?? {}) as Messages;
@@ -26,12 +25,11 @@ export class ChainBuilder<
     const newMessages = { ...this.messages };
 
     for (const [key, data] of Object.entries(entries)) {
-      const msg = new I18nMessage<Ls, void>(this.locales, this.locale).setData(data);
-      msg.setLocale(this.locale);
+      const msg = new I18nMessage<Ls, void>(this.locales, this.locales[0] as Ls[number]).setData(data);
       (newMessages as any)[key] = msg;
     }
 
-    return new ChainBuilder(this.locales, this.locale, newMessages as any);
+    return new ChainBuilder(this.locales, newMessages as any);
   }
 
   /**
@@ -52,21 +50,12 @@ export class ChainBuilder<
       const newMessages = { ...this.messages };
 
       for (const [key, data] of Object.entries(entries)) {
-        const msg = new I18nMessage<Ls, C>(this.locales, this.locale).setData(data);
-        msg.setLocale(this.locale);
+        const msg = new I18nMessage<Ls, C>(this.locales, this.locales[0] as Ls[number]).setData(data);
         (newMessages as any)[key] = msg;
       }
 
-      return new ChainBuilder(this.locales, this.locale, newMessages as any);
+      return new ChainBuilder(this.locales, newMessages as any);
     };
-  }
-
-  /**
-   * すべてのメッセージにロケールを適用した新しいChainBuilderインスタンスを返す
-   */
-  applyLocale(locale: Ls[number]): ChainBuilder<Ls, Messages> {
-    const clonedMessages = this.deepCloneWithLocale(this.messages, locale);
-    return new ChainBuilder(this.locales, locale, clonedMessages);
   }
 
   private deepCloneWithLocale<T>(obj: T, locale: Ls[number]): T {
@@ -89,14 +78,16 @@ export class ChainBuilder<
     return obj;
   }
 
-  build(): Messages {
+  build(locale?: Ls[number]): Messages {
+    if (locale !== undefined) {
+      return this.deepCloneWithLocale(this.messages, locale);
+    }
     return this.messages;
   }
 }
 
 export function createChainBuilder<const Ls extends readonly string[]>(
   locales: Ls,
-  locale: Ls[number],
 ): ChainBuilder<Ls, {}> {
-  return new ChainBuilder(locales, locale);
+  return new ChainBuilder(locales);
 }

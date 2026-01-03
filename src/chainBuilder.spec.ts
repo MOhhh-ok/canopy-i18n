@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 import { applyLocale } from "./applyLocale";
 import { createChainBuilder } from "./chainBuilder";
 
+const LOCALES = ["ja", "en"] as const;
+
 describe("ChainBuilder", () => {
   it("builds multiple messages with method chaining", () => {
-    const messages = createChainBuilder(["ja", "en"] as const, "ja")
+    const messages = createChainBuilder(LOCALES)
       .add({
         title: {
           ja: "タイトルテスト",
@@ -15,14 +17,14 @@ describe("ChainBuilder", () => {
           en: "Hello",
         },
       })
-      .build();
+      .build("ja");
 
     expect(messages.title.render()).toBe("タイトルテスト");
     expect(messages.greeting.render()).toBe("こんにちは");
   });
 
   it("supports template functions with type inference", () => {
-    const messages = createChainBuilder(["ja", "en"] as const, "ja")
+    const messages = createChainBuilder(LOCALES)
       .add({
         welcome: {
           ja: "ようこそ",
@@ -35,14 +37,14 @@ describe("ChainBuilder", () => {
           en: (ctx) => `Hello, ${ctx.name}. You are ${ctx.age}.`,
         },
       })
-      .build();
+      .build("ja");
 
     expect(messages.welcome.render()).toBe("ようこそ");
     expect(messages.greet.render({ name: "太郎", age: 25 })).toBe("こんにちは、太郎さん。25歳ですね。");
   });
 
   it("supports adding multiple template messages at once with unified type", () => {
-    const messages = createChainBuilder(["ja", "en"] as const, "ja")
+    const messages = createChainBuilder(LOCALES)
       .addTemplates<{ name: string }>()({
         greet: {
           ja: (ctx) => `こんにちは、${ctx.name}さん`,
@@ -53,14 +55,14 @@ describe("ChainBuilder", () => {
           en: (ctx) => `Goodbye, ${ctx.name}`,
         },
       })
-      .build();
+      .build("ja");
 
     expect(messages.greet.render({ name: "太郎" })).toBe("こんにちは、太郎さん");
     expect(messages.farewell.render({ name: "花子" })).toBe("さようなら、花子さん");
   });
 
   it("works with applyLocale function", () => {
-    const messages = createChainBuilder(["ja", "en"] as const, "ja")
+    const messages = createChainBuilder(LOCALES)
       .add({
         title: { ja: "タイトル", en: "Title" },
       })
@@ -70,60 +72,52 @@ describe("ChainBuilder", () => {
           en: (c) => `Hello, ${c.name}`,
         },
       })
-      .build();
+      .build("ja");
 
     const localized = applyLocale(messages, "en");
     expect(localized.title.render()).toBe("Title");
     expect(localized.msg.render({ name: "John" })).toBe("Hello, John");
   });
 
-  it("supports applyLocale method in chain", () => {
-    const builder = createChainBuilder(["ja", "en"] as const, "ja")
+  it("build() with locale parameter applies locale before building", () => {
+    const messages = createChainBuilder(LOCALES)
       .add({
         title: { ja: "タイトル", en: "Title" },
+        greeting: { ja: "こんにちは", en: "Hello" },
       })
       .addTemplates<{ name: string }>()({
-        msg: {
-          ja: (c) => `こんにちは、${c.name}さん`,
-          en: (c) => `Hello, ${c.name}`,
+        welcome: {
+          ja: (ctx) => `ようこそ、${ctx.name}さん`,
+          en: (ctx) => `Welcome, ${ctx.name}`,
         },
-      });
-
-    const englishBuilder = builder.applyLocale("en");
-    const messages = englishBuilder.build();
+      })
+      .build("en");
 
     expect(messages.title.render()).toBe("Title");
-    expect(messages.msg.render({ name: "John" })).toBe("Hello, John");
+    expect(messages.greeting.render()).toBe("Hello");
+    expect(messages.welcome.render({ name: "John" })).toBe("Welcome, John");
   });
 
-  it("applyLocale returns new instance without mutating original", () => {
-    const builder = createChainBuilder(["ja", "en"] as const, "ja")
+  it("build() without locale parameter uses default locale (first locale in array)", () => {
+    const messages = createChainBuilder(LOCALES)
       .add({
         title: { ja: "タイトル", en: "Title" },
-      });
-
-    const japaneseMessages = builder.build();
-    const englishBuilder = builder.applyLocale("en");
-    const englishMessages = englishBuilder.build();
-
-    // 元のインスタンスは変更されない
-    expect(japaneseMessages.title.render()).toBe("タイトル");
-    // 新しいインスタンスは英語
-    expect(englishMessages.title.render()).toBe("Title");
-  });
-
-  it("applyLocale can be chained with add methods", () => {
-    const messages = createChainBuilder(["ja", "en"] as const, "ja")
-      .add({
-        title: { ja: "タイトル", en: "Title" },
-      })
-      .applyLocale("en")
-      .add({
-        subtitle: { ja: "サブタイトル", en: "Subtitle" },
       })
       .build();
 
-    expect(messages.title.render()).toBe("Title");
-    expect(messages.subtitle.render()).toBe("Subtitle");
+    expect(messages.title.render()).toBe("タイトル");
+  });
+
+  it("build(locale) does not mutate the builder instance", () => {
+    const builder = createChainBuilder(LOCALES)
+      .add({
+        title: { ja: "タイトル", en: "Title" },
+      });
+
+    const englishMessages = builder.build("en");
+    const japaneseMessages = builder.build("ja");
+
+    expect(englishMessages.title.render()).toBe("Title");
+    expect(japaneseMessages.title.render()).toBe("タイトル");
   });
 });
