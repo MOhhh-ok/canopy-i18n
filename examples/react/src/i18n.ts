@@ -49,10 +49,30 @@ const features = createI18n(LOCALES).add({
   },
 });
 
+type UserContext = {
+  name: string;
+  count: number;
+};
+
+const dynamicMessages = createI18n(LOCALES)
+  .addTemplates<UserContext>()({
+    greeting: {
+      en: (ctx) => `Hello, ${ctx.name}!`,
+      ja: (ctx) => `こんにちは、${ctx.name}さん！`,
+      zh: (ctx) => `你好，${ctx.name}！`,
+    },
+    itemCount: {
+      en: (ctx) => `You have ${ctx.count} ${ctx.count === 1 ? "item" : "items"}`,
+      ja: (ctx) => `${ctx.count}個のアイテムがあります`,
+      zh: (ctx) => `你有 ${ctx.count} 个项目`,
+    },
+  });
+
 export function buildI18n(locale: Locale) {
   return {
     ...baseI18n.build(locale),
     features: features.build(locale),
+    dynamic: dynamicMessages.build(locale),
   };
 }
 

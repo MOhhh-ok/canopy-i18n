@@ -4,6 +4,12 @@ import { useI18n } from "./useI18n";
 export default function App() {
   const { messages } = useI18n();
 
+  // 動的メッセージのサンプルデータ
+  const userContext = {
+    name: "太郎",
+    count: 5,
+  };
+
   return (
     <div
       style={{
@@ -45,6 +51,25 @@ export default function App() {
           <li style={{ marginBottom: "8px" }}>{messages.features.simple.render()}</li>
           <li style={{ marginBottom: "8px" }}>{messages.features.chainable.render()}</li>
         </ul>
+      </section>
+
+      <section
+        style={{
+          marginTop: "30px",
+          padding: "20px",
+          background: "#e3f2fd",
+          borderRadius: "8px",
+        }}
+      >
+        <h2 style={{ fontSize: "1.5em", marginBottom: "15px" }}>
+          Dynamic Messages (addTemplate)
+        </h2>
+        <p style={{ marginBottom: "10px", fontSize: "1.1em" }}>
+          {messages.dynamic.greeting.render(userContext)}
+        </p>
+        <p style={{ margin: "0", color: "#555" }}>
+          {messages.dynamic.itemCount.render(userContext)}
+        </p>
       </section>
 
       <footer
