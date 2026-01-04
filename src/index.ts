@@ -1,5 +1,5 @@
-export { bindLocale, isChainBuilder } from "./bindLocale";
-export { ChainBuilder, createI18n } from "./chainBuilder";
-export { I18nMessage, isI18nMessage } from "./message";
-export type { LocalizedMessage } from "./message";
-export type { Template } from "./types";
+export { bindLocale, isChainBuilder } from "./bindLocale.js";
+export { ChainBuilder, createI18n } from "./chainBuilder.js";
+export { I18nMessage, isI18nMessage } from "./message.js";
+export type { LocalizedMessage } from "./message.js";
+export type { Template } from "./types.js";

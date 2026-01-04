@@ -1,5 +1,5 @@
-import { I18nMessage, isI18nMessage } from "./message";
-import type { LocalizedMessage } from "./message";
+import { I18nMessage, isI18nMessage } from "./message.js";
+import type { LocalizedMessage } from "./message.js";
 
 export class ChainBuilder<
   const Ls extends readonly string[],

@@ -1,5 +1,5 @@
-import type { Template } from "./types";
-import { isTemplateFunction } from "./types";
+import type { Template } from "./types.js";
+import { isTemplateFunction } from "./types.js";
 
 export type LocalizedMessage<Ls extends readonly string[], C, R = string> = I18nMessage<Ls, C, R>;
 

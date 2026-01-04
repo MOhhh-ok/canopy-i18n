@@ -1,5 +1,5 @@
-import { ChainBuilder } from "./chainBuilder";
-import { I18nMessage, isI18nMessage } from "./message";
+import { ChainBuilder } from "./chainBuilder.js";
+import { I18nMessage, isI18nMessage } from "./message.js";
 
 export function isChainBuilder(x: unknown): x is ChainBuilder<any, any> {
   return x instanceof ChainBuilder;

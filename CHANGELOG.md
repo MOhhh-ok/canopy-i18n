@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+- Fix moduleResolution to nodenext.
+
 ## 0.4.0
 
 - Change type to ESM.
