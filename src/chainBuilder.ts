@@ -86,7 +86,7 @@ export class ChainBuilder<
   }
 }
 
-export function createChainBuilder<const Ls extends readonly string[]>(
+export function createI18n<const Ls extends readonly string[]>(
   locales: Ls,
 ): ChainBuilder<Ls, {}> {
   return new ChainBuilder(locales);

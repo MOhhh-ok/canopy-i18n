@@ -1,30 +1,35 @@
 import { describe, expect, it } from "vitest";
 import { applyLocale } from "./applyLocale";
-import { createChainBuilder } from "./chainBuilder";
+import { createI18n } from "./chainBuilder";
 
 const LOCALES = ["ja", "en"] as const;
 
 describe("ChainBuilder", () => {
   it("builds multiple messages with method chaining", () => {
-    const messages = createChainBuilder(LOCALES)
+    const messages = createI18n(LOCALES)
       .add({
         title: {
           ja: "タイトルテスト",
           en: "Title Test",
         },
-        greeting: {
+        "greeting.hello": {
           ja: "こんにちは",
           en: "Hello",
+        },
+        "greeting.bye": {
+          ja: "さようなら",
+          en: "Goodbye",
         },
       })
       .build("ja");
 
     expect(messages.title.render()).toBe("タイトルテスト");
-    expect(messages.greeting.render()).toBe("こんにちは");
+    expect(messages["greeting.hello"].render()).toBe("こんにちは");
+    expect(messages["greeting.bye"].render()).toBe("さようなら");
   });
 
   it("supports template functions with type inference", () => {
-    const messages = createChainBuilder(LOCALES)
+    const messages = createI18n(LOCALES)
       .add({
         welcome: {
           ja: "ようこそ",
@@ -44,7 +49,7 @@ describe("ChainBuilder", () => {
   });
 
   it("supports adding multiple template messages at once with unified type", () => {
-    const messages = createChainBuilder(LOCALES)
+    const messages = createI18n(LOCALES)
       .addTemplates<{ name: string }>()({
         greet: {
           ja: (ctx) => `こんにちは、${ctx.name}さん`,
@@ -62,7 +67,7 @@ describe("ChainBuilder", () => {
   });
 
   it("works with applyLocale function", () => {
-    const messages = createChainBuilder(LOCALES)
+    const messages = createI18n(LOCALES)
       .add({
         title: { ja: "タイトル", en: "Title" },
       })
@@ -80,7 +85,7 @@ describe("ChainBuilder", () => {
   });
 
   it("build() with locale parameter applies locale before building", () => {
-    const messages = createChainBuilder(LOCALES)
+    const messages = createI18n(LOCALES)
       .add({
         title: { ja: "タイトル", en: "Title" },
         greeting: { ja: "こんにちは", en: "Hello" },
@@ -99,7 +104,7 @@ describe("ChainBuilder", () => {
   });
 
   it("build() without locale parameter uses default locale (first locale in array)", () => {
-    const messages = createChainBuilder(LOCALES)
+    const messages = createI18n(LOCALES)
       .add({
         title: { ja: "タイトル", en: "Title" },
       })
@@ -109,7 +114,7 @@ describe("ChainBuilder", () => {
   });
 
   it("build(locale) does not mutate the builder instance", () => {
-    const builder = createChainBuilder(LOCALES)
+    const builder = createI18n(LOCALES)
       .add({
         title: { ja: "タイトル", en: "Title" },
       });
