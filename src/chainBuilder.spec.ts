@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyLocale } from "./applyLocale";
+import { bindLocale } from "./bindLocale";
 import { createI18n } from "./chainBuilder";
 
 const LOCALES = ["ja", "en"] as const;
@@ -79,7 +79,7 @@ describe("ChainBuilder", () => {
       })
       .build("ja");
 
-    const localized = applyLocale(messages, "en");
+    const localized = bindLocale(messages, "en");
     expect(localized.title.render()).toBe("Title");
     expect(localized.msg.render({ name: "John" })).toBe("Hello, John");
   });
@@ -124,5 +124,41 @@ describe("ChainBuilder", () => {
 
     expect(englishMessages.title.render()).toBe("Title");
     expect(japaneseMessages.title.render()).toBe("タイトル");
+  });
+
+  it("applyLocale works with ChainBuilder instances", () => {
+    const builders = {
+      builder1: createI18n(LOCALES).add({ title: { ja: "タイトル", en: "Title" } }),
+      builder2: createI18n(LOCALES).add({ greeting: { ja: "こんにちは", en: "Hello" } }),
+    };
+    const buildersApplied = bindLocale(builders, "ja");
+    expect(buildersApplied.builder1.title.render()).toBe("タイトル");
+    expect(buildersApplied.builder2.greeting.render()).toBe("こんにちは");
+  });
+
+  it("applyLocale works deeply with nested ChainBuilder instances", () => {
+    const builders = {
+      builder1: {
+        builder1child: createI18n(LOCALES).add({ title: { ja: "タイトル", en: "Title" } }),
+      },
+      builder2: createI18n(LOCALES).add({ greeting: { ja: "こんにちは", en: "Hello" } }),
+    };
+    const buildersApplied = bindLocale(builders, "ja");
+    expect(buildersApplied.builder1.builder1child.title.render()).toBe("タイトル");
+    expect(buildersApplied.builder2.greeting.render()).toBe("こんにちは");
+  });
+
+  it("applyLocale works with very deep nested structures", () => {
+    const builders = {
+      level1: {
+        level2: {
+          level3: createI18n(LOCALES).add({ deep: { ja: "深い", en: "Deep" } }),
+        },
+        builder: createI18n(LOCALES).add({ msg: { ja: "メッセージ", en: "Message" } }),
+      },
+    };
+    const buildersApplied = bindLocale(builders, "en");
+    expect(buildersApplied.level1.level2.level3.deep.render()).toBe("Deep");
+    expect(buildersApplied.level1.builder.msg.render()).toBe("Message");
   });
 });

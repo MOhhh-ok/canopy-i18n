@@ -1,4 +1,5 @@
-export { applyLocale } from "./applyLocale";
+export { bindLocale as applyLocale, isChainBuilder } from "./bindLocale";
+export { ChainBuilder, createI18n } from "./chainBuilder";
 export { I18nMessage, isI18nMessage } from "./message";
 export type { LocalizedMessage } from "./message";
 export type { Template } from "./types";
