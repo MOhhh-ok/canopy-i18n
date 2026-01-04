@@ -1,6 +1,6 @@
 {
   "name": "canopy-i18n",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A tiny, type-safe i18n helper",
   "type": "commonjs",
   "main": "dist/index.js",
