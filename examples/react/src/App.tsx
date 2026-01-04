@@ -1,21 +1,16 @@
-import { buildComponentMessages } from "./components";
+import { msgsDef } from "./i18n";
 import { LanguageSwitcher } from "./LanguageSwitcher";
-import { useI18n } from "./useI18n";
+import { useBindLocale } from "./LocaleContext";
+import { ProfileCard } from "./ProfileCard";
+import type { User } from "./types";
 
 export default function App() {
-  const { messages, locale } = useI18n();
-  const componentMessages = buildComponentMessages(locale);
+  const m = useBindLocale(msgsDef);
 
   // 動的メッセージのサンプルデータ
-  const userContext = {
+  const user: User = {
     name: "太郎",
     count: 5,
-  };
-
-  // ボタンコンポーネントのサンプルデータ
-  const buttonContext = {
-    onClick: () => alert("Button clicked!"),
-    text: "Click me",
   };
 
   return (
@@ -30,7 +25,7 @@ export default function App() {
     >
       <header style={{ marginBottom: "30px", textAlign: "center" }}>
         <h1 style={{ margin: "0 0 20px 0", fontSize: "2em" }}>
-          {messages.title.render()}
+          {m.baseI18n.title.render()}
         </h1>
         <LanguageSwitcher />
       </header>
@@ -43,21 +38,21 @@ export default function App() {
         }}
       >
         <p style={{ margin: "0 0 15px 0", fontSize: "1.1em" }}>
-          {messages.welcome.render()}
+          {m.baseI18n.welcome.render()}
         </p>
         <p style={{ margin: "0", color: "#666" }}>
-          {messages.description.render()}
+          {m.baseI18n.description.render()}
         </p>
       </main>
 
       <section style={{ marginTop: "30px" }}>
         <h2 style={{ fontSize: "1.5em", marginBottom: "15px" }}>
-          {messages.features.title.render()}
+          {m.features.title.render()}
         </h2>
         <ul style={{ paddingLeft: "20px" }}>
-          <li style={{ marginBottom: "8px" }}>{messages.features.typeSafe.render()}</li>
-          <li style={{ marginBottom: "8px" }}>{messages.features.simple.render()}</li>
-          <li style={{ marginBottom: "8px" }}>{messages.features.chainable.render()}</li>
+          <li style={{ marginBottom: "8px" }}>{m.features.typeSafe.render()}</li>
+          <li style={{ marginBottom: "8px" }}>{m.features.simple.render()}</li>
+          <li style={{ marginBottom: "8px" }}>{m.features.chainable.render()}</li>
         </ul>
       </section>
 
@@ -73,10 +68,10 @@ export default function App() {
           Dynamic Messages (addTemplate)
         </h2>
         <p style={{ marginBottom: "10px", fontSize: "1.1em" }}>
-          {messages.dynamic.greeting.render(userContext)}
+          {m.dynamicMessages.greeting.render(user)}
         </p>
         <p style={{ margin: "0", color: "#555" }}>
-          {messages.dynamic.itemCount.render(userContext)}
+          {m.dynamicMessages.itemCount.render(user)}
         </p>
       </section>
 
@@ -84,22 +79,28 @@ export default function App() {
         style={{
           marginTop: "30px",
           padding: "20px",
-          background: "#f3e5f5",
+          background: "#fff3e0",
           borderRadius: "8px",
         }}
       >
         <h2 style={{ fontSize: "1.5em", marginBottom: "15px" }}>
-          Component Messages (add) {componentMessages.components.badge.render()}
+          JSX Messages (addTemplates with JSX.Element)
         </h2>
-        <div style={{ marginBottom: "15px" }}>
-          {componentMessages.components.alert.render()}
-        </div>
-        <div style={{ marginTop: "15px" }}>
-          <h3 style={{ fontSize: "1.2em", marginBottom: "10px" }}>
-            Dynamic Component (addTemplates)
-          </h3>
-          {componentMessages.dynamicComponents.button.render(buttonContext)}
-        </div>
+        <p style={{ margin: "0", fontSize: "1.1em" }}>
+          User Badge: {m.jsxMessages.badge.render(user)}
+        </p>
+      </section>
+
+      <section
+        style={{
+          marginTop: "30px",
+          padding: "20px",
+          background: "#e8f5e9",
+          borderRadius: "8px",
+        }}
+      >
+        <h2>Standalone Component Example</h2>
+        <ProfileCard />
       </section>
 
       <footer
@@ -112,7 +113,7 @@ export default function App() {
           fontSize: "0.9em",
         }}
       >
-        {messages.footer.render()}
+        {m.baseI18n.footer.render()}
       </footer>
     </div>
   );

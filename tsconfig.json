@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "CommonJS",
+    "module": "ESNext",
     "strict": true,
     "declaration": true,
     "noImplicitAny": true,
@@ -12,13 +12,8 @@
     "noUncheckedIndexedAccess": true,
     "rootDir": "./src",
     "outDir": "./dist",
+    "moduleResolution": "bundler"
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "src/**/*.spec.ts"
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "src/**/*.spec.ts"]
 }

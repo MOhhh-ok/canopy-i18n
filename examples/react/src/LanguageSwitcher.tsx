@@ -1,9 +1,8 @@
-import { useI18n } from "./useI18n";
-import { LOCALES } from "./i18n";
-import type { Locale } from "./i18n";
+import { useLocale } from "./LocaleContext";
+import { type Locale, LOCALES } from "./types";
 
 export function LanguageSwitcher() {
-  const { locale, setLocale } = useI18n();
+  const { locale, setLocale } = useLocale();
 
   return (
     <select

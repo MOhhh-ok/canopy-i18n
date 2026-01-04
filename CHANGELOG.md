@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+
+- Change type to ESM.
+
 ## 0.3.0
 
 - **Feature**: Add support for custom return types (not just strings)

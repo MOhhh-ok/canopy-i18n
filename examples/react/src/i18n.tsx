@@ -1,9 +1,10 @@
-import { createI18n } from "../../../src";
+import { createI18n } from "canopy-i18n";
+import type { JSX } from "react";
+import { LOCALES, type User } from "./types";
 
-export const LOCALES = ["en", "ja", "zh"] as const;
-export type Locale = (typeof LOCALES)[number];
+export const defineMessage = () => createI18n(LOCALES);
 
-const baseI18n = createI18n(LOCALES).add({
+const baseI18n = defineMessage().add({
   title: {
     en: "Canopy i18n",
     ja: "Canopy i18n",
@@ -26,7 +27,7 @@ const baseI18n = createI18n(LOCALES).add({
   },
 });
 
-const features = createI18n(LOCALES).add({
+const features = defineMessage().add({
   title: {
     en: "Features",
     ja: "特徴",
@@ -49,13 +50,8 @@ const features = createI18n(LOCALES).add({
   },
 });
 
-type UserContext = {
-  name: string;
-  count: number;
-};
-
-const dynamicMessages = createI18n(LOCALES)
-  .addTemplates<UserContext>()({
+const dynamicMessages = defineMessage()
+  .addTemplates<User>()({
     greeting: {
       en: (ctx) => `Hello, ${ctx.name}!`,
       ja: (ctx) => `こんにちは、${ctx.name}さん！`,
@@ -68,12 +64,49 @@ const dynamicMessages = createI18n(LOCALES)
     },
   });
 
-export function buildI18n(locale: Locale) {
-  return {
-    ...baseI18n.build(locale),
-    features: features.build(locale),
-    dynamic: dynamicMessages.build(locale),
-  };
-}
+const jsxMessages = defineMessage()
+  .addTemplates<User, JSX.Element>()({
+    badge: {
+      en: (user) => (
+        <span
+          style={{
+            background: "#FF6B6B",
+            color: "#fff",
+            padding: "4px 12px",
+            borderRadius: "16px",
+            fontWeight: "600",
+          }}
+        >
+          {user.name}
+        </span>
+      ),
+      ja: (user) => (
+        <span
+          style={{
+            background: "#4ECDC4",
+            color: "#fff",
+            padding: "4px 12px",
+            borderRadius: "16px",
+            fontWeight: "600",
+          }}
+        >
+          {user.name}さん
+        </span>
+      ),
+      zh: (user) => (
+        <span
+          style={{
+            background: "#FFB84D",
+            color: "#fff",
+            padding: "4px 12px",
+            borderRadius: "16px",
+            fontWeight: "600",
+          }}
+        >
+          {user.name}
+        </span>
+      ),
+    },
+  });
 
-export type Messages = ReturnType<typeof buildI18n>;
+export const msgsDef = { baseI18n, features, dynamicMessages, jsxMessages };
