@@ -161,4 +161,77 @@ describe("ChainBuilder", () => {
     expect(buildersApplied.level1.level2.level3.deep.render()).toBe("Deep");
     expect(buildersApplied.level1.builder.msg.render()).toBe("Message");
   });
+
+  it("clone() creates an independent copy of the builder", () => {
+    const builder1 = createI18n(LOCALES)
+      .add({
+        title: { ja: "タイトル", en: "Title" },
+      });
+
+    const builder2 = builder1.clone();
+
+    const messages1 = builder1.build("ja");
+    const messages2 = builder2.build("ja");
+
+    expect(messages1.title.render()).toBe("タイトル");
+    expect(messages2.title.render()).toBe("タイトル");
+  });
+
+  it("clone() allows independent message additions", () => {
+    const builder1 = createI18n(LOCALES)
+      .add({
+        title: { ja: "タイトル", en: "Title" },
+      });
+
+    const builder2 = builder1.clone().add({
+      greeting: { ja: "こんにちは", en: "Hello" },
+    });
+
+    const messages1 = builder1.build("ja");
+    const messages2 = builder2.build("ja");
+
+    expect(messages1.title.render()).toBe("タイトル");
+    expect((messages1 as any).greeting).toBeUndefined();
+
+    expect(messages2.title.render()).toBe("タイトル");
+    expect(messages2.greeting.render()).toBe("こんにちは");
+  });
+
+  it("clone() creates deep copies of messages", () => {
+    const builder1 = createI18n(LOCALES)
+      .add({
+        title: { ja: "タイトル", en: "Title" },
+      });
+
+    const builder2 = builder1.clone();
+
+    const messages1 = builder1.build("ja");
+    const messages2 = builder2.build("en");
+
+    expect(messages1.title.render()).toBe("タイトル");
+    expect(messages2.title.render()).toBe("Title");
+  });
+
+  it("clone() works with template messages", () => {
+    const builder1 = createI18n(LOCALES)
+      .addTemplates<{ name: string }>()({
+        greet: {
+          ja: (ctx) => `こんにちは、${ctx.name}さん`,
+          en: (ctx) => `Hello, ${ctx.name}`,
+        },
+      });
+
+    const builder2 = builder1.clone().add({
+      farewell: { ja: "さようなら", en: "Goodbye" },
+    });
+
+    const messages1 = builder1.build("ja");
+    const messages2 = builder2.build("en");
+
+    expect(messages1.greet.render({ name: "太郎" })).toBe("こんにちは、太郎さん");
+    expect((messages1 as any).farewell).toBeUndefined();
+
+    expect(messages2.greet.render({ name: "John" })).toBe("Hello, John");
+    expect(messages2.farewell.render()).toBe("Goodbye");
+  });
 });

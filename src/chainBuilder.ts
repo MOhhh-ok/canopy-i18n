@@ -84,6 +84,26 @@ export class ChainBuilder<
     }
     return this.messages;
   }
+
+  /**
+   * 現在のChainBuilderの状態をコピーした新しいインスタンスを返す
+   */
+  clone(): ChainBuilder<Ls, Messages> {
+    const clonedMessages: Record<string, any> = {};
+
+    for (const [key, msg] of Object.entries(this.messages)) {
+      if (isI18nMessage(msg)) {
+        // I18nMessageをクローン
+        const cloned = Object.create(Object.getPrototypeOf(msg));
+        Object.assign(cloned, msg);
+        clonedMessages[key] = cloned;
+      } else {
+        clonedMessages[key] = msg;
+      }
+    }
+
+    return new ChainBuilder(this.locales, clonedMessages as Messages);
+  }
 }
 
 export function createI18n<const Ls extends readonly string[]>(

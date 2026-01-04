@@ -2,6 +2,6 @@
 
 ## 0.2.0
 
-- Remove some variables and functions from I18nMessage class.
-- Rename createI18n to createBuilder.
+- **Breaking change**: Modify `createI18n` function signature
+- Rename applyLocale to bindLocale.
 - Use bun instead of pnpm.

@@ -1,5 +1,0 @@
-onlyBuiltDependencies:
-  - sharp
-
-overrides:
-  canopy-i18n: link:../..

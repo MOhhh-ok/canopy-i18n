@@ -1,13 +1,13 @@
-## canopy-i18n
+# canopy-i18n
 
-A tiny, type-safe i18n helper for building localized messages and applying a locale across nested data structures.
+A tiny, type-safe i18n library for building localized messages with builder pattern and applying locales across nested data structures.
 
-### Features
+## Features
 - **Type-safe locales**: Compile-time safety for allowed locale keys.
-- **Per-message fallback**: Each message knows its default and fallback locale.
-- **Template or string**: Use plain strings or `(ctx) => string` templates.
-- **Flexible templating**: Since templates are plain functions, you can freely use JavaScript template literals, conditionals, helpers, or any formatting library. This library does not provide a tagged template literal API.
-- **Deep locale application**: Switch locale across entire object/array trees.
+- **Builder pattern**: Chain methods to build multiple messages at once.
+- **String or template functions**: Use plain strings or `(ctx) => string` templates.
+- **Flexible templating**: Templates are plain functions, so you can freely use JavaScript template literals, conditionals, helpers, or any formatting library.
+- **Deep locale application**: Switch locale across entire object/array trees, including nested builders.
 
 ## Installation
 
@@ -17,179 +17,371 @@ npm install canopy-i18n
 pnpm add canopy-i18n
 # or
 yarn add canopy-i18n
+# or
+bun add canopy-i18n
 ```
 
-## Quick start
+## Quick Start
 
 ```ts
-import { createI18n, applyLocale } from 'canopy-i18n';
+import { createI18n, bindLocale } from 'canopy-i18n';
 
-// 1) Declare allowed locales and fallback
-const defineMessage = createI18n(['ja', 'en'] as const, 'ja');
+// 1) Create a builder with allowed locales
+const baseBuilder = createI18n(['ja', 'en'] as const);
 
-// 2) Define messages
-const title = defineMessage({
-  ja: 'タイトルテスト',
-  en: 'Title Test',
-});
+// 2) Define messages using method chaining (store in a variable)
+const builder = baseBuilder
+  .add({
+    title: {
+      ja: 'タイトルテスト',
+      en: 'Title Test',
+    },
+    greeting: {
+      ja: 'こんにちは',
+      en: 'Hello',
+    },
+  })
+  .addTemplates<{ name: string; age: number }>()({
+    welcome: {
+      ja: (ctx) => `こんにちは、${ctx.name}さん。あなたは${ctx.age}歳です。`,
+      en: (ctx) => `Hello, ${ctx.name}. You are ${ctx.age} years old.`,
+    },
+  });
 
-const msg = defineMessage<{ name: string; age: number }>({
-  ja: c => `こんにちは、${c.name}さん。あなたは${c.age}歳です。`,
-  en: c => `Hello, ${c.name}. You are ${c.age} years old.`,
-});
+// 3) Reuse the builder to create messages for different locales
+const enMessages = builder.build('en');
+const jaMessages = builder.build('ja');
 
-// 3) Compose nested data structures
-const data = {
-  title,
-  nested: {
-    hello: defineMessage({ ja: 'こんにちは', en: 'Hello' }),
-  },
-};
+// 4) Render messages (English)
+console.log(enMessages.title.render());                        // "Title Test"
+console.log(enMessages.greeting.render());                     // "Hello"
+console.log(enMessages.welcome.render({ name: 'Tanaka', age: 20 })); // "Hello, Tanaka. You are 20 years old."
 
-// 4) Apply locale across the tree
-const localized = applyLocale(data, 'en');
-
-console.log(localized.title.render());       // "Title Test"
-console.log(localized.nested.hello.render()); // "Hello"
-console.log(msg.setLocale('en').render({ name: 'Tanaka', age: 20 }));
+// 5) Render messages (Japanese)
+console.log(jaMessages.title.render());                        // "タイトルテスト"
+console.log(jaMessages.greeting.render());                     // "こんにちは"
+console.log(jaMessages.welcome.render({ name: 'Tanaka', age: 20 })); // "こんにちは、Tanakaさん。あなたは20歳です。"
 ```
 
 ## API
 
-### createI18n(locales, fallbackLocale)
-Returns a `defineMessage` function to create localized messages.
+### `createI18n(locales)`
+Creates a `ChainBuilder` instance to build localized messages.
 
 - **locales**: `readonly string[]` — Allowed locale keys (e.g. `['ja', 'en'] as const`).
-- **fallbackLocale**: fallback locale when the active locale value is missing. New messages start with this locale active.
+- Returns: `ChainBuilder<Locales, {}>` — A builder instance to chain message definitions.
 
-Overloads:
-- `defineMessage<Record<L[number], string>>() -> I18nMessage<L, void>`
-- `defineMessage<Record<L[number], Template<C>>>() -> I18nMessage<L, C>`
+```ts
+const builder = createI18n(['ja', 'en', 'fr'] as const);
+```
 
-### I18nMessage<L, C>
+### `ChainBuilder`
+A builder class for creating multiple localized messages with method chaining.
+
+#### `.add(entries)`
+Adds multiple string messages at once.
+
+- **entries**: `Record<string, Record<Locale, string>>`
+- Returns: `ChainBuilder` with added messages
+
+```ts
+const builder = createI18n(['ja', 'en'] as const)
+  .add({
+    title: { ja: 'タイトル', en: 'Title' },
+    greeting: { ja: 'こんにちは', en: 'Hello' },
+  });
+```
+
+#### `.addTemplates<Context>()(entries)`
+Adds multiple template function messages at once with a unified context type.
+
+Note: This uses a curried API for better type inference. Call `addTemplates<Context>()` first, then call the returned function with entries.
+
+- **Context**: Type parameter for the template function context
+- **entries**: `Record<string, Record<Locale, (ctx: Context) => string>>`
+- Returns: `ChainBuilder` with added template messages
+
+```ts
+const builder = createI18n(['ja', 'en'] as const)
+  .addTemplates<{ name: string; age: number }>()({
+    greet: {
+      ja: (ctx) => `こんにちは、${ctx.name}さん。${ctx.age}歳ですね。`,
+      en: (ctx) => `Hello, ${ctx.name}. You are ${ctx.age}.`,
+    },
+    farewell: {
+      ja: (ctx) => `さようなら、${ctx.name}さん。`,
+      en: (ctx) => `Goodbye, ${ctx.name}.`,
+    },
+  });
+```
+
+#### `.build(locale?)`
+Builds the final messages object.
+
+- **locale**: (optional) `Locale` — If provided, sets this locale on all messages before returning. If omitted, uses the first locale in the locales array as default.
+- Returns: `Messages` — An object containing all defined messages
+
+```ts
+// Build with default locale (first in array)
+const defaultMessages = builder.build();
+
+// Build with specific locale
+const englishMessages = builder.build('en');
+const japaneseMessages = builder.build('ja');
+```
+
+**Note**: `build(locale)` creates a deep clone and does not mutate the builder instance, allowing you to build multiple locale versions from the same builder.
+
+#### `.clone()`
+Creates an independent copy of the current builder with all its messages.
+
+- Returns: `ChainBuilder<Locales, Messages>` — A new builder instance with cloned messages
+
+```ts
+const builder1 = createI18n(['ja', 'en'] as const)
+  .add({
+    title: { ja: 'タイトル', en: 'Title' },
+  });
+
+const builder2 = builder1.clone().add({
+  greeting: { ja: 'こんにちは', en: 'Hello' },
+});
+
+const messages1 = builder1.build('ja');
+const messages2 = builder2.build('ja');
+
+console.log(messages1.title.render());    // "タイトル"
+console.log(messages1.greeting);          // undefined
+
+console.log(messages2.title.render());    // "タイトル"
+console.log(messages2.greeting.render()); // "こんにちは"
+```
+
+**Note**: `clone()` creates a deep copy of all messages, allowing you to branch off from a base builder and add different messages independently.
+
+### `I18nMessage<Locales, Context>`
 Represents a single localized message.
 
-- **properties**
-  - `locales: L`
-  - `locale: L[number]` (getter)
-  - `fallbackLocale: L[number]` (getter)
-  - `data: Record<L[number], Template<C>>`
-- **methods**
-  - `setLocale(locale: L[number]): this`
-  - `setFallbackLocale(locale: L[number]): this`
-  - `render(ctx?: C): string` — If the value for the active locale is a function, it’s invoked with `ctx`; otherwise the string is returned. Falls back to `fallbackLocale` if needed.
+#### Properties
+- `locales: Locales` — Readonly array of allowed locales
+- `locale: Locale` — Current active locale (getter)
+- `data: Record<Locale, Template<Context>>` — Message data for all locales (getter)
 
-### applyLocale(obj, locale)
-Recursively traverses arrays/objects and sets the given `locale` on all `I18nMessage` instances encountered.
+#### Methods
+- `setLocale(locale: Locale): this` — Sets the active locale
+- `setData(data: Record<Locale, Template<Context>>): this` — Sets the message data
+- `render(ctx?: Context): string` — Renders the message for the active locale
 
-- Returns a new container (arrays/objects are cloned), but reuses the same message instances after updating their locale.
+```ts
+const message = messages.title;
+console.log(message.locale);           // Current locale
+console.log(message.render());         // Rendered string
+
+message.setLocale('ja');
+console.log(message.render());         // Japanese version
+```
+
+### `bindLocale(obj, locale)`
+Recursively traverses objects/arrays and sets the given locale on all `I18nMessage` instances and builds all `ChainBuilder` instances encountered.
+
+- **obj**: Any object/array structure containing messages or builders
+- **locale**: The locale to apply
+- Returns: A new structure with locale applied (containers are cloned, message instances are updated in place)
+
+```ts
+const data = {
+  common: builder1,
+  nested: {
+    special: builder2,
+  },
+};
+
+const localized = bindLocale(data, 'en');
+console.log(localized.common.title.render());      // English version
+console.log(localized.nested.special.msg.render()); // English version
+```
+
+**Note**: `bindLocale` works with both `ChainBuilder` instances (automatically building them with the specified locale) and already-built message objects (updating their locale).
 
 ## Types
 
 ```ts
 export type Template<C> = string | ((ctx: C) => string);
+export type LocalizedMessage<Locales, Context> = I18nMessage<Locales, Context>;
 ```
 
 ## Exports
 
 ```ts
+export { createI18n, ChainBuilder } from 'canopy-i18n';
 export { I18nMessage, isI18nMessage } from 'canopy-i18n';
-export { createI18n } from 'canopy-i18n';
-export { applyLocale } from 'canopy-i18n';
-export type { Template } from 'canopy-i18n';
-export type { LocalizedMessage } from 'canopy-i18n';
+export { bindLocale, isChainBuilder } from 'canopy-i18n';
+export type { Template, LocalizedMessage } from 'canopy-i18n';
 ```
 
-## Notes
-- CommonJS build (`main: dist/index.js`) with TypeScript type declarations (`types: dist/index.d.ts`).
-- Works in Node or bundlers; recommended usage is TypeScript/ESM import via your build tool.
-- License: MIT.
- - Not a tagged template library: you write plain functions (examples use JS template literals inside those functions).
+## Usage Patterns
 
-### Split files example (namespace import)
-
-Import all message exports as a namespace and set the locale across the whole tree.
+### Basic String Messages
 
 ```ts
-// messages.ts
-import { createI18n } from 'canopy-i18n';
-const defineMessage = createI18n(['ja', 'en'] as const, 'ja');
+const messages = createI18n(['ja', 'en'] as const)
+  .add({
+    title: { ja: 'タイトル', en: 'Title' },
+    greeting: { ja: 'こんにちは', en: 'Hello' },
+    farewell: { ja: 'さようなら', en: 'Goodbye' },
+  })
+  .build('en');
 
-export const title = defineMessage({
-  ja: 'タイトルテスト',
-  en: 'Title Test',
+console.log(messages.title.render());    // "Title"
+console.log(messages.greeting.render()); // "Hello"
+```
+
+### Template Functions with Context
+
+```ts
+const messages = createI18n(['ja', 'en'] as const)
+  .addTemplates<{ name: string; age: number }>()({
+    profile: {
+      ja: (ctx) => `名前: ${ctx.name}、年齢: ${ctx.age}歳`,
+      en: (ctx) => `Name: ${ctx.name}, Age: ${ctx.age}`,
+    },
+  })
+  .build('en');
+
+console.log(messages.profile.render({ name: 'Taro', age: 25 }));
+// "Name: Taro, Age: 25"
+```
+
+### Mixing String and Template Messages
+
+```ts
+const messages = createI18n(['ja', 'en'] as const)
+  .add({
+    title: { ja: 'タイトル', en: 'Title' },
+  })
+  .addTemplates<{ count: number }>()({
+    items: {
+      ja: (ctx) => `${ctx.count}個のアイテム`,
+      en: (ctx) => `${ctx.count} items`,
+    },
+  })
+  .build('ja');
+
+console.log(messages.title.render());           // "タイトル"
+console.log(messages.items.render({ count: 5 })); // "5個のアイテム"
+```
+
+### Using Clone for Shared Base Messages
+
+```ts
+// Create a base builder with common messages
+const baseBuilder = createI18n(['ja', 'en'] as const)
+  .add({
+    common: { ja: '共通', en: 'Common' },
+    error: { ja: 'エラー', en: 'Error' },
+  });
+
+// Clone and extend for admin pages
+const adminMessages = baseBuilder.clone()
+  .add({
+    adminTitle: { ja: '管理画面', en: 'Admin Panel' },
+  })
+  .build('en');
+
+// Clone and extend for user pages
+const userMessages = baseBuilder.clone()
+  .add({
+    userTitle: { ja: 'ユーザー画面', en: 'User Panel' },
+  })
+  .build('en');
+
+console.log(adminMessages.common.render());     // "Common"
+console.log(adminMessages.adminTitle.render()); // "Admin Panel"
+console.log(userMessages.common.render());      // "Common"
+console.log(userMessages.userTitle.render());   // "User Panel"
+```
+
+### Namespace Pattern (Split Files)
+
+```ts
+// i18n/locales.ts
+export const LOCALES = ['ja', 'en'] as const;
+
+// i18n/common.ts
+import { createI18n } from 'canopy-i18n';
+import { LOCALES } from './locales';
+
+export const common = createI18n(LOCALES).add({
+  hello: { ja: 'こんにちは', en: 'Hello' },
+  goodbye: { ja: 'さようなら', en: 'Goodbye' },
 });
 
-export const msg = defineMessage<{ name: string; age: number }>({
-  ja: c => `こんにちは、${c.name}さん。あなたは${c.age}歳です。`,
-  en: c => `Hello, ${c.name}. You are ${c.age} years old.`,
-});
-```
-
-```ts
-// usage.ts
-import * as messages from './messages';
-import { applyLocale } from 'canopy-i18n';
-
-const m = applyLocale(messages, 'en');
-
-console.log(m.title.render());                     // "Title Test"
-console.log(m.msg.render({ name: 'Tanaka', age: 20 }));
-```
-
-#### Multi-file structure
-
-```ts
-// i18n/defineMessage.ts
+// i18n/user.ts
 import { createI18n } from 'canopy-i18n';
-export const defineMessage = createI18n(['ja', 'en'] as const, 'ja');
+import { LOCALES } from './locales';
+
+export const user = createI18n(LOCALES).addTemplates<{ name: string }>()({
+  welcome: {
+    ja: (ctx) => `ようこそ、${ctx.name}さん`,
+    en: (ctx) => `Welcome, ${ctx.name}`,
+  },
+});
+
+// i18n/index.ts
+export { common } from './common';
+export { user } from './user';
+
+// app.ts
+import { bindLocale } from 'canopy-i18n';
+import * as i18n from './i18n';
+
+const messages = bindLocale(i18n, 'en');
+console.log(messages.common.hello.render());              // "Hello"
+console.log(messages.user.welcome.render({ name: 'John' })); // "Welcome, John"
 ```
+
+### Dynamic Locale Switching
 
 ```ts
-// i18n/messages/common.ts
-import { defineMessage } from '../defineMessage';
-export const hello = defineMessage({ ja: 'こんにちは', en: 'Hello' });
+const builder = createI18n(['ja', 'en'] as const)
+  .add({
+    title: { ja: 'タイトル', en: 'Title' },
+  });
+
+// Build different locale versions from the same builder
+const jaMessages = builder.build('ja');
+const enMessages = builder.build('en');
+
+console.log(jaMessages.title.render()); // "タイトル"
+console.log(enMessages.title.render()); // "Title"
+
+// Or use bindLocale to switch locale dynamically
+const messages = builder.build();
+const localizedJa = bindLocale(messages, 'ja');
+const localizedEn = bindLocale(messages, 'en');
 ```
+
+### Deep Nested Structures
 
 ```ts
-// i18n/messages/home.ts
-import { defineMessage } from '../defineMessage';
-export const title = defineMessage({ ja: 'タイトル', en: 'Title' });
+const structure = {
+  header: createI18n(['ja', 'en'] as const)
+    .add({ title: { ja: 'ヘッダー', en: 'Header' } }),
+  content: {
+    main: createI18n(['ja', 'en'] as const)
+      .add({ body: { ja: '本文', en: 'Body' } }),
+    sidebar: createI18n(['ja', 'en'] as const)
+      .add({ widget: { ja: 'ウィジェット', en: 'Widget' } }),
+  },
+};
+
+const localized = bindLocale(structure, 'en');
+console.log(localized.header.title.render());           // "Header"
+console.log(localized.content.main.body.render());      // "Body"
+console.log(localized.content.sidebar.widget.render()); // "Widget"
 ```
 
-```ts
-// i18n/messages/index.ts
-export * as common from './common';
-export * as home from './home';
-```
 
-```ts
-// usage.ts
-import * as msgs from './i18n/messages';
-import { applyLocale } from 'canopy-i18n';
+## Repository
 
-const m = applyLocale(msgs, 'en');
-
-console.log(m.common.hello.render()); // "Hello"
-console.log(m.home.title.render());   // "Title"
-```
-
-Note: Module namespace objects are read-only; `applyLocale` returns a cloned plain object while updating each `I18nMessage` instance's locale in place.
-
-## Example: Next.js App Router
-
-An example Next.js App Router project lives under `examples/next-app`.
-
-- Server-side usage: `/{locale}/server` renders messages using `applyLocale` in a server component
-- Client-side usage: `/{locale}/client` renders messages using hooks (`useLocale`, `useApplyLocale`)
-
-How to run:
-
-```bash
-git clone https://github.com/mohhh-ok/canopy-i18n
-cd canopy-i18n/examples/next-app
-pnpm install
-pnpm dev
-```
-
-Open `http://localhost:3000` and you will be redirected to `/{locale}` based on `Accept-Language`.
+https://github.com/MOhhh-ok/canopy-i18n
