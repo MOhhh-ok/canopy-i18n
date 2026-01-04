@@ -234,4 +234,81 @@ describe("ChainBuilder", () => {
     expect(messages2.greet.render({ name: "John" })).toBe("Hello, John");
     expect(messages2.farewell.render()).toBe("Goodbye");
   });
+
+  it("add() supports custom return types", () => {
+    type MenuItem = {
+      label: string;
+      url: string;
+    };
+
+    const messages = createI18n(LOCALES)
+      .add<MenuItem>({
+        home: {
+          ja: { label: "ホーム", url: "/" },
+          en: { label: "Home", url: "/" },
+        },
+        settings: {
+          ja: { label: "設定", url: "/settings" },
+          en: { label: "Settings", url: "/settings" },
+        },
+      })
+      .build("en");
+
+    const home = messages.home.render();
+    expect(home.label).toBe("Home");
+    expect(home.url).toBe("/");
+
+    const settings = messages.settings.render();
+    expect(settings.label).toBe("Settings");
+    expect(settings.url).toBe("/settings");
+  });
+
+  it("addTemplates() supports custom return types", () => {
+    type ButtonData = {
+      text: string;
+      color: string;
+    };
+
+    type ButtonContext = {
+      label: string;
+    };
+
+    const messages = createI18n(LOCALES)
+      .addTemplates<ButtonContext, ButtonData>()({
+        button: {
+          ja: (ctx) => ({ text: ctx.label, color: "青" }),
+          en: (ctx) => ({ text: ctx.label, color: "blue" }),
+        },
+      })
+      .build("en");
+
+    const button = messages.button.render({ label: "Submit" });
+    expect(button.text).toBe("Submit");
+    expect(button.color).toBe("blue");
+  });
+
+  it("supports mixing string messages and custom return types", () => {
+    type Badge = {
+      text: string;
+      level: "info" | "warning" | "error";
+    };
+
+    const messages = createI18n(LOCALES)
+      .add({
+        title: { ja: "タイトル", en: "Title" },
+      })
+      .add<Badge>({
+        badge: {
+          ja: { text: "新着", level: "info" },
+          en: { text: "NEW", level: "info" },
+        },
+      })
+      .build("en");
+
+    expect(messages.title.render()).toBe("Title");
+
+    const badge = messages.badge.render();
+    expect(badge.text).toBe("NEW");
+    expect(badge.level).toBe("info");
+  });
 });

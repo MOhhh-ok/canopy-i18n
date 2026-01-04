@@ -1,19 +1,22 @@
-import { isTemplateFunction, Template } from "./types";
+import type { Template } from "./types";
+import { isTemplateFunction } from "./types";
 
-export type LocalizedMessage<Ls extends readonly string[], C> = I18nMessage<Ls, C>;
+export type LocalizedMessage<Ls extends readonly string[], C, R = string> = I18nMessage<Ls, C, R>;
 
-export function isI18nMessage(x: unknown): x is I18nMessage<any, any> {
+export function isI18nMessage(x: unknown): x is I18nMessage<any, any, any> {
   return x instanceof I18nMessage;
 }
 
-export class I18nMessage<Ls extends readonly string[], C> {
+export class I18nMessage<Ls extends readonly string[], C, R = string> {
+  public readonly locales: Ls;
   private _locale: Ls[number];
-  private _data!: Record<Ls[number], Template<C>>;
+  private _data!: Record<Ls[number], Template<C, R>>;
 
   constructor(
-    public readonly locales: Ls,
+    locales: Ls,
     locale: Ls[number],
   ) {
+    this.locales = locales;
     this._locale = locale;
   }
 
@@ -26,19 +29,22 @@ export class I18nMessage<Ls extends readonly string[], C> {
     return this;
   }
 
-  get data(): Record<Ls[number], Template<C>> {
+  get data(): Record<Ls[number], Template<C, R>> {
     return this._data;
   }
 
-  setData(data: Record<Ls[number], Template<C>>) {
+  setData(data: Record<Ls[number], Template<C, R>>) {
     this._data = data;
     return this;
   }
 
-  render(this: I18nMessage<Ls, void>): string;
-  render(ctx: C): string;
-  render(ctx?: C): string {
+  render(this: I18nMessage<Ls, void, R>): R;
+  render(ctx: C): R;
+  render(ctx?: C): R {
     const v = this._data[this._locale];
-    return isTemplateFunction(v) ? v(ctx as C) : (v as string);
+    if (isTemplateFunction<C, R>(v)) {
+      return v(ctx as C);
+    }
+    return v as R;
   }
 }

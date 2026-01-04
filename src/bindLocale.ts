@@ -5,13 +5,9 @@ export function isChainBuilder(x: unknown): x is ChainBuilder<any, any> {
   return x instanceof ChainBuilder;
 }
 
-// ChainBuilderをMessagesに変換する型ヘルパー
-type UnwrapChainBuilder<T> = T extends ChainBuilder<any, infer Messages> ? Messages
-  : T;
-
 // 深くネストされた構造を再帰的に変換する型
 // I18nMessageはそのまま保持し、ChainBuilderのみMessages型に変換
-type DeepUnwrapChainBuilders<T> = T extends I18nMessage<any, any> ? T
+type DeepUnwrapChainBuilders<T> = T extends I18nMessage<any, any, any> ? T
   : T extends ChainBuilder<any, infer Messages> ? Messages
   : T extends readonly any[] ? { [K in keyof T]: DeepUnwrapChainBuilders<T[K]> }
   : T extends object ? { [K in keyof T]: DeepUnwrapChainBuilders<T[K]> }

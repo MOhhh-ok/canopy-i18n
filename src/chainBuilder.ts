@@ -1,31 +1,35 @@
-import { I18nMessage, isI18nMessage, LocalizedMessage } from "./message";
+import { I18nMessage, isI18nMessage } from "./message";
+import type { LocalizedMessage } from "./message";
 
 export class ChainBuilder<
   const Ls extends readonly string[],
-  Messages extends Record<string, I18nMessage<Ls, any>> = {},
+  Messages extends Record<string, I18nMessage<Ls, any, any>> = {},
 > {
+  private readonly locales: Ls;
   private messages: Messages;
 
   constructor(
-    private readonly locales: Ls,
+    locales: Ls,
     messages?: Messages,
   ) {
+    this.locales = locales;
     this.messages = (messages ?? {}) as Messages;
   }
 
   /**
-   * 文字列指定版: 複数のメッセージを一度に追加
+   * 複数のメッセージを一度に追加
+   * 型パラメータRでカスタム型も指定可能(デフォルトはstring)
    */
-  add<Entries extends Record<string, Record<Ls[number], string>>>(
+  add<R = string, Entries extends Record<string, Record<Ls[number], R>> = Record<string, Record<Ls[number], R>>>(
     entries: { [K in keyof Entries]: K extends keyof Messages ? never : Entries[K] },
   ): ChainBuilder<
     Ls,
-    Messages & { [K in keyof Entries]: LocalizedMessage<Ls, void> }
+    Messages & { [K in keyof Entries]: LocalizedMessage<Ls, void, R> }
   > {
     const newMessages = { ...this.messages };
 
     for (const [key, data] of Object.entries(entries)) {
-      const msg = new I18nMessage<Ls, void>(this.locales, this.locales[0] as Ls[number]).setData(data);
+      const msg = new I18nMessage<Ls, void, R>(this.locales, this.locales[0] as Ls[number]).setData(data);
       (newMessages as any)[key] = msg;
     }
 
@@ -35,22 +39,22 @@ export class ChainBuilder<
   /**
    * 関数指定版: 複数のテンプレート関数を一度に追加(型は統一)
    */
-  addTemplates<C>(): <Entries extends Record<string, Record<Ls[number], (ctx: C) => string>>>(
+  addTemplates<C, R = string>(): <Entries extends Record<string, Record<Ls[number], (ctx: C) => R>>>(
     entries: { [K in keyof Entries]: K extends keyof Messages ? never : Entries[K] },
   ) => ChainBuilder<
     Ls,
-    Messages & { [K in keyof Entries]: LocalizedMessage<Ls, C> }
+    Messages & { [K in keyof Entries]: LocalizedMessage<Ls, C, R> }
   > {
-    return <Entries extends Record<string, Record<Ls[number], (ctx: C) => string>>>(
+    return <Entries extends Record<string, Record<Ls[number], (ctx: C) => R>>>(
       entries: { [K in keyof Entries]: K extends keyof Messages ? never : Entries[K] },
     ): ChainBuilder<
       Ls,
-      Messages & { [K in keyof Entries]: LocalizedMessage<Ls, C> }
+      Messages & { [K in keyof Entries]: LocalizedMessage<Ls, C, R> }
     > => {
       const newMessages = { ...this.messages };
 
       for (const [key, data] of Object.entries(entries)) {
-        const msg = new I18nMessage<Ls, C>(this.locales, this.locales[0] as Ls[number]).setData(data);
+        const msg = new I18nMessage<Ls, C, R>(this.locales, this.locales[0] as Ls[number]).setData(data);
         (newMessages as any)[key] = msg;
       }
 

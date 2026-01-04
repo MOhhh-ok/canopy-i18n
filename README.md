@@ -7,6 +7,7 @@ A tiny, type-safe i18n library for building localized messages with builder patt
 - **Builder pattern**: Chain methods to build multiple messages at once.
 - **String or template functions**: Use plain strings or `(ctx) => string` templates.
 - **Flexible templating**: Templates are plain functions, so you can freely use JavaScript template literals, conditionals, helpers, or any formatting library.
+- **Generic return types**: Return any type (string, React components, etc.) from your messages.
 - **Deep locale application**: Switch locale across entire object/array trees, including nested builders.
 
 ## Installation
@@ -78,27 +79,53 @@ const builder = createI18n(['ja', 'en', 'fr'] as const);
 ### `ChainBuilder`
 A builder class for creating multiple localized messages with method chaining.
 
-#### `.add(entries)`
-Adds multiple string messages at once.
+#### `.add<ReturnType = string>(entries)`
+Adds multiple messages at once. By default, returns `string`, but you can specify a custom return type.
 
-- **entries**: `Record<string, Record<Locale, string>>`
+- **ReturnType**: (optional) Type parameter for the return value (defaults to `string`)
+- **entries**: `Record<string, Record<Locale, ReturnType>>`
 - Returns: `ChainBuilder` with added messages
 
 ```ts
+// String messages (default)
 const builder = createI18n(['ja', 'en'] as const)
   .add({
     title: { ja: 'タイトル', en: 'Title' },
     greeting: { ja: 'こんにちは', en: 'Hello' },
   });
+
+// Custom return type (e.g., React components)
+const messages = createI18n(['ja', 'en'] as const)
+  .add<JSX.Element>({
+    badge: {
+      ja: <span style={{ color: 'red' }}>新着</span>,
+      en: <span style={{ color: 'red' }}>NEW</span>,
+    },
+  });
+
+// Custom return type (objects)
+type MenuItem = {
+  label: string;
+  url: string;
+};
+
+const menu = createI18n(['ja', 'en'] as const)
+  .add<MenuItem>({
+    home: {
+      ja: { label: 'ホーム', url: '/' },
+      en: { label: 'Home', url: '/' },
+    },
+  });
 ```
 
-#### `.addTemplates<Context>()(entries)`
-Adds multiple template function messages at once with a unified context type.
+#### `.addTemplates<Context, ReturnType = string>()(entries)`
+Adds multiple template function messages at once with a unified context type and custom return type.
 
-Note: This uses a curried API for better type inference. Call `addTemplates<Context>()` first, then call the returned function with entries.
+Note: This uses a curried API for better type inference. Call `addTemplates<Context, ReturnType>()` first, then call the returned function with entries.
 
 - **Context**: Type parameter for the template function context
-- **entries**: `Record<string, Record<Locale, (ctx: Context) => string>>`
+- **ReturnType**: (optional) Type parameter for the return value (defaults to `string`)
+- **entries**: `Record<string, Record<Locale, (ctx: Context) => ReturnType>>`
 - Returns: `ChainBuilder` with added template messages
 
 ```ts
@@ -114,6 +141,8 @@ const builder = createI18n(['ja', 'en'] as const)
     },
   });
 ```
+
+
 
 #### `.build(locale?)`
 Builds the final messages object.
@@ -159,18 +188,18 @@ console.log(messages2.greeting.render()); // "こんにちは"
 
 **Note**: `clone()` creates a deep copy of all messages, allowing you to branch off from a base builder and add different messages independently.
 
-### `I18nMessage<Locales, Context>`
+### `I18nMessage<Locales, Context, ReturnType = string>`
 Represents a single localized message.
 
 #### Properties
 - `locales: Locales` — Readonly array of allowed locales
 - `locale: Locale` — Current active locale (getter)
-- `data: Record<Locale, Template<Context>>` — Message data for all locales (getter)
+- `data: Record<Locale, Template<Context, ReturnType>>` — Message data for all locales (getter)
 
 #### Methods
 - `setLocale(locale: Locale): this` — Sets the active locale
-- `setData(data: Record<Locale, Template<Context>>): this` — Sets the message data
-- `render(ctx?: Context): string` — Renders the message for the active locale
+- `setData(data: Record<Locale, Template<Context, ReturnType>>): this` — Sets the message data
+- `render(ctx?: Context): ReturnType` — Renders the message for the active locale and returns the specified type
 
 ```ts
 const message = messages.title;
@@ -206,8 +235,8 @@ console.log(localized.nested.special.msg.render()); // English version
 ## Types
 
 ```ts
-export type Template<C> = string | ((ctx: C) => string);
-export type LocalizedMessage<Locales, Context> = I18nMessage<Locales, Context>;
+export type Template<C, R = string> = R | ((ctx: C) => R);
+export type LocalizedMessage<Locales, Context, ReturnType = string> = I18nMessage<Locales, Context, ReturnType>;
 ```
 
 ## Exports
@@ -220,6 +249,92 @@ export type { Template, LocalizedMessage } from 'canopy-i18n';
 ```
 
 ## Usage Patterns
+
+### React Components as Messages
+
+```ts
+import { createI18n } from 'canopy-i18n';
+
+// Static React components
+const messages = createI18n(['ja', 'en'] as const)
+  .add<JSX.Element>({
+    badge: {
+      ja: <span style={{ background: '#4caf50', color: 'white', padding: '4px 8px', borderRadius: '4px' }}>新着</span>,
+      en: <span style={{ background: '#4caf50', color: 'white', padding: '4px 8px', borderRadius: '4px' }}>NEW</span>,
+    },
+    alert: {
+      ja: <div style={{ background: '#fff3cd', padding: '12px', borderRadius: '4px' }}>⚠️ これは警告です</div>,
+      en: <div style={{ background: '#fff3cd', padding: '12px', borderRadius: '4px' }}>⚠️ This is a warning</div>,
+    },
+  })
+  .build('en');
+
+// Render in React
+function MyComponent() {
+  return (
+    <div>
+      {messages.badge.render()}
+      {messages.alert.render()}
+    </div>
+  );
+}
+
+// Dynamic React components with context
+type ButtonContext = {
+  onClick: () => void;
+  text: string;
+};
+
+const dynamicMessages = createI18n(['ja', 'en'] as const)
+  .addTemplates<ButtonContext, JSX.Element>()({
+    button: {
+      ja: (ctx) => (
+        <button onClick={ctx.onClick} style={{ background: '#2196f3', color: 'white', padding: '8px 16px' }}>
+          {ctx.text}
+        </button>
+      ),
+      en: (ctx) => (
+        <button onClick={ctx.onClick} style={{ background: '#2196f3', color: 'white', padding: '8px 16px' }}>
+          {ctx.text}
+        </button>
+      ),
+    },
+  })
+  .build('en');
+
+// Use with context
+function AnotherComponent() {
+  return <div>{dynamicMessages.button.render({ onClick: () => alert('Clicked!'), text: 'Click me' })}</div>;
+}
+```
+
+### Custom Object Types
+
+```ts
+type MenuItem = {
+  label: string;
+  url: string;
+  icon: string;
+};
+
+const menuMessages = createI18n(['ja', 'en'] as const)
+  .add<MenuItem>({
+    home: {
+      ja: { label: 'ホーム', url: '/', icon: '🏠' },
+      en: { label: 'Home', url: '/', icon: '🏠' },
+    },
+    settings: {
+      ja: { label: '設定', url: '/settings', icon: '⚙️' },
+      en: { label: 'Settings', url: '/settings', icon: '⚙️' },
+    },
+  })
+  .build('en');
+
+const homeMenu = menuMessages.home.render();
+console.log(homeMenu.label); // "Home"
+console.log(homeMenu.url);   // "/"
+console.log(homeMenu.icon);  // "🏠"
+```
 
 ### Basic String Messages
 

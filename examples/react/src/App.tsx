@@ -1,13 +1,21 @@
+import { buildComponentMessages } from "./components";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useI18n } from "./useI18n";
 
 export default function App() {
-  const { messages } = useI18n();
+  const { messages, locale } = useI18n();
+  const componentMessages = buildComponentMessages(locale);
 
   // 動的メッセージのサンプルデータ
   const userContext = {
     name: "太郎",
     count: 5,
+  };
+
+  // ボタンコンポーネントのサンプルデータ
+  const buttonContext = {
+    onClick: () => alert("Button clicked!"),
+    text: "Click me",
   };
 
   return (
@@ -70,6 +78,28 @@ export default function App() {
         <p style={{ margin: "0", color: "#555" }}>
           {messages.dynamic.itemCount.render(userContext)}
         </p>
+      </section>
+
+      <section
+        style={{
+          marginTop: "30px",
+          padding: "20px",
+          background: "#f3e5f5",
+          borderRadius: "8px",
+        }}
+      >
+        <h2 style={{ fontSize: "1.5em", marginBottom: "15px" }}>
+          Component Messages (add) {componentMessages.components.badge.render()}
+        </h2>
+        <div style={{ marginBottom: "15px" }}>
+          {componentMessages.components.alert.render()}
+        </div>
+        <div style={{ marginTop: "15px" }}>
+          <h3 style={{ fontSize: "1.2em", marginBottom: "10px" }}>
+            Dynamic Component (addTemplates)
+          </h3>
+          {componentMessages.dynamicComponents.button.render(buttonContext)}
+        </div>
       </section>
 
       <footer
