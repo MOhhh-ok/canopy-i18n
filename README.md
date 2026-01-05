@@ -8,58 +8,71 @@ A tiny, type-safe i18n library for building localized messages with builder patt
 - **Flexible templating**: Plain functions support any JavaScript logic, template literals, or formatting library.
 - **Generic return types**: Return strings, React components, objects, or any custom type.
 - **Zero dependencies**: Lightweight with native TypeScript syntax, no custom {{placeholder}} format.
-
 ## Why Canopy i18n?
 
-Unlike traditional i18n libraries (i18next, react-intl, next-intl), canopy-i18n allows you to **colocate i18n definitions with components** in the same file:
+Traditional i18n libraries require separate JSON files and string-based key lookups:
 
-**Traditional i18n libraries:**
+**Traditional approach:**
 ```ts
-// Separate file: locales/en.json
-{ "profile.title": "User Profile", "profile.edit": "Edit Profile" }
+// locales/en.json
+{ "greeting": "Hello", "farewell": "Goodbye" }
 
-// Component file
-import { useTranslation } from 'react-i18next';
+// locales/ja.json
+{ "greeting": "こんにちは", "farewell": "さようなら" }
 
-export function ProfileCard() {
-  const { t } = useTranslation();
-  return (
-    <div>
-      <h2>{t('profile.title')}</h2>  {/* String keys, no type safety */}
-      <button>{t('profile.edit')}</button>
-    </div>
-  );
-}
+// app.ts
+import i18next from 'i18next';
+
+await i18next.init({ /* config... */ });
+console.log(i18next.t('greeting'));  // No type safety, typos cause silent failures
 ```
 
 **Canopy i18n:**
 ```ts
-// Same file - component + i18n together!
 import { createI18n } from 'canopy-i18n';
 
-const msgs = createI18n(['en', 'ja'] as const).add({
-  title: { en: 'User Profile', ja: 'ユーザープロフィール' },
-  edit: { en: 'Edit Profile', ja: 'プロフィール編集' }
-});
+const messages = createI18n(['en', 'ja'] as const).add({
+  greeting: { en: 'Hello', ja: 'こんにちは' },
+  farewell: { en: 'Goodbye', ja: 'さようなら' }
+}).build('en');
 
-export function ProfileCard() {
-  const m = useBindLocale(msgs);
-  return (
-    <div>
-      <h2>{m.title.render()}</h2>  {/* Fully type-safe */}
-      <button>{m.edit.render()}</button>
-    </div>
-  );
-}
+console.log(messages.greeting);  // Fully type-safe, autocomplete works
+```
+
+**With template functions:**
+```ts
+const messages = createI18n(['en', 'ja'] as const)
+  .addTemplates<{ name: string }>()({
+    welcome: {
+      en: ({ name }) => `Welcome, ${name}!`,
+      ja: ({ name }) => `ようこそ、${name}さん！`
+    }
+  }).build('en');
+
+console.log(messages.welcome({ name: 'Alice' }));  // "Welcome, Alice!"
+```
+
+**With custom return types:**
+```ts
+type MenuItem = { label: string; url: string };
+
+const menu = createI18n(['en', 'ja'] as const)
+  .add<MenuItem>({
+    home: {
+      en: { label: 'Home', url: '/en' },
+      ja: { label: 'ホーム', url: '/ja' }
+    }
+  }).build('ja');
+
+console.log(menu.home.label);  // "ホーム"
+console.log(menu.home.url);    // "/ja"
 ```
 
 **Benefits:**
-- 🎯 **Better colocation**: Component-specific messages live with the component
-- 🔒 **Complete type safety**: No string keys, compile-time checks for all messages
-- ⚡ **Zero setup**: No separate config files, loaders, or build tools needed
-- 🧹 **Dead code elimination**: Unused messages are easy to find and remove
-- 📦 **Flexible organization**: Choose centralized or distributed patterns per use case
-- 🚀 **Framework agnostic**: Works with React, Vue, Svelte, or vanilla JavaScript
+- 🔒 **Type safety**: Typos caught at compile time, full autocomplete support
+- 📁 **Colocation**: All translations in one place, no file jumping
+- ⚡ **Zero config**: No loaders, plugins, or initialization required
+- 🚀 **Framework agnostic**: Works anywhere JavaScript runs
 
 ## Installation
 
@@ -81,7 +94,8 @@ import { createI18n, bindLocale } from 'canopy-i18n';
 // 1) Create a builder with allowed locales
 const baseBuilder = createI18n(['ja', 'en'] as const);
 
-// 2) Define messages using method chaining (store in a variable)
+// 2) Define messages using method chaining
+// Note: Each method returns a new immutable builder instance
 const builder = baseBuilder
   .add({
     title: {

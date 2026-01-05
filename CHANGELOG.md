@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2
+
+- Improved README.md
+
 ## 0.4.1
 
 - Fix moduleResolution to nodenext.
