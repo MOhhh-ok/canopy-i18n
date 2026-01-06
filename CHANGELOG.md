@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0
+
+- Remove render and clone methods.
+
 ## 0.4.2
 
 - Improved README.md
