@@ -25,7 +25,7 @@ export default function App() {
     >
       <header style={{ marginBottom: "30px", textAlign: "center" }}>
         <h1 style={{ margin: "0 0 20px 0", fontSize: "2em" }}>
-          {m.baseI18n.title.render()}
+          {m.baseI18n.title()}
         </h1>
         <LanguageSwitcher />
       </header>
@@ -38,21 +38,21 @@ export default function App() {
         }}
       >
         <p style={{ margin: "0 0 15px 0", fontSize: "1.1em" }}>
-          {m.baseI18n.welcome.render()}
+          {m.baseI18n.welcome()}
         </p>
         <p style={{ margin: "0", color: "#666" }}>
-          {m.baseI18n.description.render()}
+          {m.baseI18n.description()}
         </p>
       </main>
 
       <section style={{ marginTop: "30px" }}>
         <h2 style={{ fontSize: "1.5em", marginBottom: "15px" }}>
-          {m.features.title.render()}
+          {m.features.title()}
         </h2>
         <ul style={{ paddingLeft: "20px" }}>
-          <li style={{ marginBottom: "8px" }}>{m.features.typeSafe.render()}</li>
-          <li style={{ marginBottom: "8px" }}>{m.features.simple.render()}</li>
-          <li style={{ marginBottom: "8px" }}>{m.features.chainable.render()}</li>
+          <li style={{ marginBottom: "8px" }}>{m.features.typeSafe()}</li>
+          <li style={{ marginBottom: "8px" }}>{m.features.simple()}</li>
+          <li style={{ marginBottom: "8px" }}>{m.features.chainable()}</li>
         </ul>
       </section>
 
@@ -68,10 +68,10 @@ export default function App() {
           Dynamic Messages (addTemplate)
         </h2>
         <p style={{ marginBottom: "10px", fontSize: "1.1em" }}>
-          {m.dynamicMessages.greeting.render(user)}
+          {m.dynamicMessages.greeting(user)}
         </p>
         <p style={{ margin: "0", color: "#555" }}>
-          {m.dynamicMessages.itemCount.render(user)}
+          {m.dynamicMessages.itemCount(user)}
         </p>
       </section>
 
@@ -87,7 +87,7 @@ export default function App() {
           JSX Messages (addTemplates with JSX.Element)
         </h2>
         <p style={{ margin: "0", fontSize: "1.1em" }}>
-          User Badge: {m.jsxMessages.badge.render(user)}
+          User Badge: {m.jsxMessages.badge(user)}
         </p>
       </section>
 
@@ -113,7 +113,7 @@ export default function App() {
           fontSize: "0.9em",
         }}
       >
-        {m.baseI18n.footer.render()}
+        {m.baseI18n.footer()}
       </footer>
     </div>
   );

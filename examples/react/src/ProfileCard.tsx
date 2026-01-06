@@ -60,15 +60,15 @@ export function ProfileCard() {
         background: "white",
       }}
     >
-      <h2>{m.title.render()}</h2>
+      <h2>{m.title()}</h2>
       <div style={{ marginTop: "16px" }}>
-        {m.greeting.render(user)}
+        {m.greeting(user)}
       </div>
       <div style={{ marginTop: "12px" }}>
-        {m.stats.render(user)}
+        {m.stats(user)}
       </div>
       <div style={{ marginTop: "16px" }}>
-        <div style={{ fontWeight: "600" }}>{m.bio.render()}</div>
+        <div style={{ fontWeight: "600" }}>{m.bio()}</div>
         <p style={{ color: "#555", marginTop: "8px" }}>{user.bio}</p>
       </div>
       <button
@@ -82,7 +82,7 @@ export function ProfileCard() {
           cursor: "pointer",
         }}
       >
-        {m.edit.render()}
+        {m.edit()}
       </button>
     </div>
   );

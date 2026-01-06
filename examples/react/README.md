@@ -34,7 +34,7 @@ const msgs = createI18n(LOCALES).add({
 
 export function Component() {
   const m = useBindLocale(msgs);
-  return <div>{m.title.render()}</div>; // Fully type-safe
+  return <div>{m.title()}</div>; // Fully type-safe
 }
 ```
 
@@ -144,8 +144,8 @@ function MyComponent() {
   
   return (
     <div>
-      <h1>{m.baseI18n.title.render()}</h1>
-      <p>{m.dynamicMessages.greeting.render({ name: 'Taro' })}</p>
+      <h1>{m.baseI18n.title()}</h1>
+      <p>{m.dynamicMessages.greeting({ name: 'Taro' })}</p>
     </div>
   );
 }
@@ -229,8 +229,8 @@ export function ProfileCard() {
   
   return (
     <div>
-      <h2>{m.title.render()}</h2>
-      <button>{m.edit.render()}</button>
+      <h2>{m.title()}</h2>
+      <button>{m.edit()}</button>
     </div>
   );
 }
