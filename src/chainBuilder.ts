@@ -24,7 +24,7 @@ export class ChainBuilder<
     entries: { [K in keyof Entries]: K extends keyof Messages ? never : Entries[K] },
   ): ChainBuilder<
     Ls,
-    Messages & { [K in keyof Entries]: LocalizedMessage<Ls, void, R> }
+    Messages & { [K in keyof Entries]: I18nMessage<Ls, void, R> }
   > {
     const newMessages = { ...this.messages };
 
@@ -43,13 +43,13 @@ export class ChainBuilder<
     entries: { [K in keyof Entries]: K extends keyof Messages ? never : Entries[K] },
   ) => ChainBuilder<
     Ls,
-    Messages & { [K in keyof Entries]: LocalizedMessage<Ls, C, R> }
+    Messages & { [K in keyof Entries]: I18nMessage<Ls, C, R> }
   > {
     return <Entries extends Record<string, Record<Ls[number], (ctx: C) => R>>>(
       entries: { [K in keyof Entries]: K extends keyof Messages ? never : Entries[K] },
     ): ChainBuilder<
       Ls,
-      Messages & { [K in keyof Entries]: LocalizedMessage<Ls, C, R> }
+      Messages & { [K in keyof Entries]: I18nMessage<Ls, C, R> }
     > => {
       const newMessages = { ...this.messages };
 
@@ -82,11 +82,28 @@ export class ChainBuilder<
     return obj;
   }
 
-  build(locale?: Ls[number]): Messages {
-    if (locale !== undefined) {
-      return this.deepCloneWithLocale(this.messages, locale);
+  build<
+    M = {
+      [K in keyof Messages]: Messages[K] extends I18nMessage<Ls, infer C, infer R> ? LocalizedMessage<Ls, C, R> : never;
+    },
+  >(
+    locale?: Ls[number],
+  ): M {
+    const clonedMessages = locale !== undefined
+      ? this.deepCloneWithLocale(this.messages, locale)
+      : this.messages;
+
+    const result: Record<string, any> = {};
+
+    for (const [key, msg] of Object.entries(clonedMessages)) {
+      if (isI18nMessage(msg)) {
+        result[key] = msg.toFunction();
+      } else {
+        result[key] = msg;
+      }
     }
-    return this.messages;
+
+    return result as M;
   }
 
   /**

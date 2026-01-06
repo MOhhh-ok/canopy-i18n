@@ -23,9 +23,9 @@ describe("ChainBuilder", () => {
       })
       .build("ja");
 
-    expect(messages.title.render()).toBe("タイトルテスト");
-    expect(messages["greeting.hello"].render()).toBe("こんにちは");
-    expect(messages["greeting.bye"].render()).toBe("さようなら");
+    expect(messages.title()).toBe("タイトルテスト");
+    expect(messages["greeting.hello"]()).toBe("こんにちは");
+    expect(messages["greeting.bye"]()).toBe("さようなら");
   });
 
   it("supports template functions with type inference", () => {
@@ -44,8 +44,8 @@ describe("ChainBuilder", () => {
       })
       .build("ja");
 
-    expect(messages.welcome.render()).toBe("ようこそ");
-    expect(messages.greet.render({ name: "太郎", age: 25 })).toBe("こんにちは、太郎さん。25歳ですね。");
+    expect(messages.welcome()).toBe("ようこそ");
+    expect(messages.greet({ name: "太郎", age: 25 })).toBe("こんにちは、太郎さん。25歳ですね。");
   });
 
   it("supports adding multiple template messages at once with unified type", () => {
@@ -62,12 +62,12 @@ describe("ChainBuilder", () => {
       })
       .build("ja");
 
-    expect(messages.greet.render({ name: "太郎" })).toBe("こんにちは、太郎さん");
-    expect(messages.farewell.render({ name: "花子" })).toBe("さようなら、花子さん");
+    expect(messages.greet({ name: "太郎" })).toBe("こんにちは、太郎さん");
+    expect(messages.farewell({ name: "花子" })).toBe("さようなら、花子さん");
   });
 
   it("works with applyLocale function", () => {
-    const messages = createI18n(LOCALES)
+    const builder = createI18n(LOCALES)
       .add({
         title: { ja: "タイトル", en: "Title" },
       })
@@ -76,12 +76,11 @@ describe("ChainBuilder", () => {
           ja: (c) => `こんにちは、${c.name}さん`,
           en: (c) => `Hello, ${c.name}`,
         },
-      })
-      .build("ja");
+      });
 
-    const localized = bindLocale(messages, "en");
-    expect(localized.title.render()).toBe("Title");
-    expect(localized.msg.render({ name: "John" })).toBe("Hello, John");
+    const localized = bindLocale(builder, "en");
+    expect(localized.title()).toBe("Title");
+    expect(localized.msg({ name: "John" })).toBe("Hello, John");
   });
 
   it("build() with locale parameter applies locale before building", () => {
@@ -98,9 +97,9 @@ describe("ChainBuilder", () => {
       })
       .build("en");
 
-    expect(messages.title.render()).toBe("Title");
-    expect(messages.greeting.render()).toBe("Hello");
-    expect(messages.welcome.render({ name: "John" })).toBe("Welcome, John");
+    expect(messages.title()).toBe("Title");
+    expect(messages.greeting()).toBe("Hello");
+    expect(messages.welcome({ name: "John" })).toBe("Welcome, John");
   });
 
   it("build() without locale parameter uses default locale (first locale in array)", () => {
@@ -110,7 +109,7 @@ describe("ChainBuilder", () => {
       })
       .build();
 
-    expect(messages.title.render()).toBe("タイトル");
+    expect(messages.title()).toBe("タイトル");
   });
 
   it("build(locale) does not mutate the builder instance", () => {
@@ -122,8 +121,8 @@ describe("ChainBuilder", () => {
     const englishMessages = builder.build("en");
     const japaneseMessages = builder.build("ja");
 
-    expect(englishMessages.title.render()).toBe("Title");
-    expect(japaneseMessages.title.render()).toBe("タイトル");
+    expect(englishMessages.title()).toBe("Title");
+    expect(japaneseMessages.title()).toBe("タイトル");
   });
 
   it("applyLocale works with ChainBuilder instances", () => {
@@ -132,8 +131,8 @@ describe("ChainBuilder", () => {
       builder2: createI18n(LOCALES).add({ greeting: { ja: "こんにちは", en: "Hello" } }),
     };
     const buildersApplied = bindLocale(builders, "ja");
-    expect(buildersApplied.builder1.title.render()).toBe("タイトル");
-    expect(buildersApplied.builder2.greeting.render()).toBe("こんにちは");
+    expect(buildersApplied.builder1.title()).toBe("タイトル");
+    expect(buildersApplied.builder2.greeting()).toBe("こんにちは");
   });
 
   it("applyLocale works deeply with nested ChainBuilder instances", () => {
@@ -144,8 +143,8 @@ describe("ChainBuilder", () => {
       builder2: createI18n(LOCALES).add({ greeting: { ja: "こんにちは", en: "Hello" } }),
     };
     const buildersApplied = bindLocale(builders, "ja");
-    expect(buildersApplied.builder1.builder1child.title.render()).toBe("タイトル");
-    expect(buildersApplied.builder2.greeting.render()).toBe("こんにちは");
+    expect(buildersApplied.builder1.builder1child.title()).toBe("タイトル");
+    expect(buildersApplied.builder2.greeting()).toBe("こんにちは");
   });
 
   it("applyLocale works with very deep nested structures", () => {
@@ -158,8 +157,8 @@ describe("ChainBuilder", () => {
       },
     };
     const buildersApplied = bindLocale(builders, "en");
-    expect(buildersApplied.level1.level2.level3.deep.render()).toBe("Deep");
-    expect(buildersApplied.level1.builder.msg.render()).toBe("Message");
+    expect(buildersApplied.level1.level2.level3.deep()).toBe("Deep");
+    expect(buildersApplied.level1.builder.msg()).toBe("Message");
   });
 
   it("clone() creates an independent copy of the builder", () => {
@@ -173,8 +172,8 @@ describe("ChainBuilder", () => {
     const messages1 = builder1.build("ja");
     const messages2 = builder2.build("ja");
 
-    expect(messages1.title.render()).toBe("タイトル");
-    expect(messages2.title.render()).toBe("タイトル");
+    expect(messages1.title()).toBe("タイトル");
+    expect(messages2.title()).toBe("タイトル");
   });
 
   it("clone() allows independent message additions", () => {
@@ -190,11 +189,11 @@ describe("ChainBuilder", () => {
     const messages1 = builder1.build("ja");
     const messages2 = builder2.build("ja");
 
-    expect(messages1.title.render()).toBe("タイトル");
+    expect(messages1.title()).toBe("タイトル");
     expect((messages1 as any).greeting).toBeUndefined();
 
-    expect(messages2.title.render()).toBe("タイトル");
-    expect(messages2.greeting.render()).toBe("こんにちは");
+    expect(messages2.title()).toBe("タイトル");
+    expect(messages2.greeting()).toBe("こんにちは");
   });
 
   it("clone() creates deep copies of messages", () => {
@@ -208,8 +207,8 @@ describe("ChainBuilder", () => {
     const messages1 = builder1.build("ja");
     const messages2 = builder2.build("en");
 
-    expect(messages1.title.render()).toBe("タイトル");
-    expect(messages2.title.render()).toBe("Title");
+    expect(messages1.title()).toBe("タイトル");
+    expect(messages2.title()).toBe("Title");
   });
 
   it("clone() works with template messages", () => {
@@ -228,11 +227,11 @@ describe("ChainBuilder", () => {
     const messages1 = builder1.build("ja");
     const messages2 = builder2.build("en");
 
-    expect(messages1.greet.render({ name: "太郎" })).toBe("こんにちは、太郎さん");
+    expect(messages1.greet({ name: "太郎" })).toBe("こんにちは、太郎さん");
     expect((messages1 as any).farewell).toBeUndefined();
 
-    expect(messages2.greet.render({ name: "John" })).toBe("Hello, John");
-    expect(messages2.farewell.render()).toBe("Goodbye");
+    expect(messages2.greet({ name: "John" })).toBe("Hello, John");
+    expect(messages2.farewell()).toBe("Goodbye");
   });
 
   it("add() supports custom return types", () => {
@@ -254,11 +253,11 @@ describe("ChainBuilder", () => {
       })
       .build("en");
 
-    const home = messages.home.render();
+    const home = messages.home();
     expect(home.label).toBe("Home");
     expect(home.url).toBe("/");
 
-    const settings = messages.settings.render();
+    const settings = messages.settings();
     expect(settings.label).toBe("Settings");
     expect(settings.url).toBe("/settings");
   });
@@ -282,7 +281,7 @@ describe("ChainBuilder", () => {
       })
       .build("en");
 
-    const button = messages.button.render({ label: "Submit" });
+    const button = messages.button({ label: "Submit" });
     expect(button.text).toBe("Submit");
     expect(button.color).toBe("blue");
   });
@@ -305,9 +304,9 @@ describe("ChainBuilder", () => {
       })
       .build("en");
 
-    expect(messages.title.render()).toBe("Title");
+    expect(messages.title()).toBe("Title");
 
-    const badge = messages.badge.render();
+    const badge = messages.badge();
     expect(badge.text).toBe("NEW");
     expect(badge.level).toBe("info");
   });
