@@ -163,8 +163,8 @@ const builder = createI18n(['ja', 'en'] as const)
 const messages = createI18n(['ja', 'en'] as const)
   .add<JSX.Element>({
     badge: {
-      ja: <span style={{ color: 'red' }}>新着</span>,
-      en: <span style={{ color: 'red' }}>NEW</span>,
+      ja: <span style={{ background: '#ff4444', color: 'white', padding: '2px 6px', borderRadius: '2px' }}>🔴 新着</span>,
+      en: <span style={{ background: '#4caf50', color: 'white', padding: '4px 12px', borderRadius: '16px' }}>✨ NEW</span>,
     },
   });
 
@@ -172,13 +172,14 @@ const messages = createI18n(['ja', 'en'] as const)
 type MenuItem = {
   label: string;
   url: string;
+  icon: string;
 };
 
 const menu = createI18n(['ja', 'en'] as const)
   .add<MenuItem>({
     home: {
-      ja: { label: 'ホーム', url: '/' },
-      en: { label: 'Home', url: '/' },
+      ja: { label: 'ホーム', url: '/ja', icon: '🏠' },
+      en: { label: 'Home', url: '/en', icon: '🏡' },
     },
   });
 ```
@@ -392,92 +393,6 @@ const localized = bindLocale(structure, 'en');
 console.log(localized.header.title());           // "Header"
 console.log(localized.content.main.body());      // "Body"
 console.log(localized.content.sidebar.widget()); // "Widget"
-```
-
-### React Components as Messages
-
-```ts
-import { createI18n } from 'canopy-i18n';
-
-// Static React components
-const messages = createI18n(['ja', 'en'] as const)
-  .add<JSX.Element>({
-    badge: {
-      ja: <span style={{ background: '#4caf50', color: 'white', padding: '4px 8px', borderRadius: '4px' }}>新着</span>,
-      en: <span style={{ background: '#4caf50', color: 'white', padding: '4px 8px', borderRadius: '4px' }}>NEW</span>,
-    },
-    alert: {
-      ja: <div style={{ background: '#fff3cd', padding: '12px', borderRadius: '4px' }}>⚠️ これは警告です</div>,
-      en: <div style={{ background: '#fff3cd', padding: '12px', borderRadius: '4px' }}>⚠️ This is a warning</div>,
-    },
-  })
-  .build('en');
-
-// Render in React
-function MyComponent() {
-  return (
-    <div>
-      {messages.badge()}
-      {messages.alert()}
-    </div>
-  );
-}
-
-// Dynamic React components with context
-type ButtonContext = {
-  onClick: () => void;
-  text: string;
-};
-
-const dynamicMessages = createI18n(['ja', 'en'] as const)
-  .addTemplates<ButtonContext, JSX.Element>()({
-    button: {
-      ja: (ctx) => (
-        <button onClick={ctx.onClick} style={{ background: '#2196f3', color: 'white', padding: '8px 16px' }}>
-          {ctx.text}
-        </button>
-      ),
-      en: (ctx) => (
-        <button onClick={ctx.onClick} style={{ background: '#2196f3', color: 'white', padding: '8px 16px' }}>
-          {ctx.text}
-        </button>
-      ),
-    },
-  })
-  .build('en');
-
-// Use with context
-function AnotherComponent() {
-  return <div>{dynamicMessages.button({ onClick: () => alert('Clicked!'), text: 'Click me' })}</div>;
-}
-```
-
-### Custom Object Types
-
-```ts
-type MenuItem = {
-  label: string;
-  url: string;
-  icon: string;
-};
-
-const menuMessages = createI18n(['ja', 'en'] as const)
-  .add<MenuItem>({
-    home: {
-      ja: { label: 'ホーム', url: '/', icon: '🏠' },
-      en: { label: 'Home', url: '/', icon: '🏠' },
-    },
-    settings: {
-      ja: { label: '設定', url: '/settings', icon: '⚙️' },
-      en: { label: 'Settings', url: '/settings', icon: '⚙️' },
-    },
-  })
-  .build('en');
-
-const homeMenu = menuMessages.home();
-console.log(homeMenu.label); // "Home"
-console.log(homeMenu.url);   // "/"
-console.log(homeMenu.icon);  // "🏠"
 ```
 
 
