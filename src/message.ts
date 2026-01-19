@@ -47,7 +47,7 @@ export class I18nMessage<Ls extends readonly string[], C, R = string> {
 
   toFunction(): LocalizedMessage<Ls, C, R> {
     const self = this;
-    const fn = ((ctx?: C) => self(ctx)) as LocalizedMessage<Ls, C, R>;
+    const fn = ((ctx?: C) => self.render(ctx)) as LocalizedMessage<Ls, C, R>;
     return fn;
   }
 }
