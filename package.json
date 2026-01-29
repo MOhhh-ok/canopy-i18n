@@ -25,7 +25,8 @@
     "prepublishOnly": "pnpm run build",
     "type-check": "tsc -p . --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "release": "release-it"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.8",
@@ -48,6 +49,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MOhhh-ok/canopy-i18n"
+    "url": "https://github.com/mohhh-ok/canopy-i18n"
   }
 }
