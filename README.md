@@ -147,11 +147,12 @@ const builder = createI18n(['ja', 'en', 'fr'] as const);
 ### `ChainBuilder`
 A builder class for creating multiple localized messages with method chaining.
 
-#### `.add<ReturnType = string>(entries)`
+#### `.add<ReturnType = string, K extends string = string>(entries)`
 Adds multiple messages at once. By default, returns `string`, but you can specify a custom return type.
 
 - **ReturnType**: (optional) Type parameter for the return value (defaults to `string`)
-- **entries**: `Record<string, Record<Locale, ReturnType>>`
+- **K**: (optional) Type parameter for the keys of the entries record (defaults to `string`)
+- **entries**: `Record<K, Record<Locale, ReturnType>>`
 - Returns: `ChainBuilder` with added messages
 
 ```ts
@@ -187,14 +188,15 @@ const menu = createI18n(['ja', 'en'] as const)
   });
 ```
 
-#### `.addTemplates<Context, ReturnType = string>()(entries)`
+#### `.addTemplates<Context, ReturnType = string, K extends string = string>()(entries)`
 Adds multiple template function messages at once with a unified context type and custom return type.
 
-Note: This uses a curried API for better type inference. Call `addTemplates<Context, ReturnType>()` first, then call the returned function with entries.
+Note: This uses a curried API for better type inference. Call `addTemplates<Context, ReturnType, K>()` first, then call the returned function with entries.
 
 - **Context**: Type parameter for the template function context
 - **ReturnType**: (optional) Type parameter for the return value (defaults to `string`)
-- **entries**: `Record<string, Record<Locale, (ctx: Context) => ReturnType>>`
+- **K**: (optional) Type parameter for the keys of the entries record (defaults to `string`)
+- **entries**: `Record<K, Record<Locale, (ctx: Context) => ReturnType>>`
 - Returns: `ChainBuilder` with added template messages
 
 ```ts

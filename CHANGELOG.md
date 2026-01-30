@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+
+- **Feature**: Add key type parameter `K` to `add` and `addTemplates` methods
+  - `add<R, K extends string>()` now accepts a key type parameter for better type inference
+  - `addTemplates<C, R, K extends string>()` now accepts a key type parameter for better type inference
+  - Improved type safety for Record keys in message definitions
+
 ## 0.5.0
 
 - Remove render and clone methods.
