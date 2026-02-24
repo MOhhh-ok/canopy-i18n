@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1
+
+- Add SKILL.md
+
 ## 0.6.0
 
 - **Feature**: Add key type parameter `K` to `add` and `addTemplates` methods
